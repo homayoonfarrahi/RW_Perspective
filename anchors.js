@@ -179,7 +179,7 @@ function AnchorPoint(point, circle, anchorLine) {
     }.bind(this),
     function (x, y, event) {
       this.handle.attr('fill', '#f00');
-      initialHandlePos = new Point2(this.handle.attr('cx'), this.handle.attr('cy'));
+      initialHandlePos = new Point2D(this.handle.attr('cx'), this.handle.attr('cy'));
     }.bind(this),
     function (event) {
       this.handle.attr('fill', '#00f');

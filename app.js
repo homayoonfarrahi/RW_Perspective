@@ -80,7 +80,7 @@ for (let i = 0; i < 4; i++) {
       for (i = 0; i < circles.length; i++) {
         if (circles[i].circle === circle) break;
       }
-      circles[i].point.setTo(initialCirclePos.clone().add(new Point2(dx, dy)));
+      circles[i].point.setTo(initialCirclePos.clone().add(new Point2D(dx, dy)));
       updateCircles();
       updatePathsForCircle(circle);
       updateFillerPath();
@@ -88,7 +88,7 @@ for (let i = 0; i < 4; i++) {
     },
     (x, y, event) => {
       circle.attr('fill', '#f00');
-      initialCirclePos = new Point2(circle.attr('cx'), circle.attr('cy'));
+      initialCirclePos = new Point2D(circle.attr('cx'), circle.attr('cy'));
     },
     (event) => {
       circle.attr('fill', '#00f');
