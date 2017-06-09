@@ -1,7 +1,7 @@
-pa = new Point2(325, 350);
-pb = new Point2(500, 375);
-pc = new Point2(750, 600);
-pd = new Point2(30, 500);
+pa = new Point2D(325, 350);
+pb = new Point2D(500, 375);
+pc = new Point2D(750, 600);
+pd = new Point2D(30, 500);
 // console.log(plane.getUV(plane.a.x, plane.b.x, plane.c.x, plane.a.y, plane.b.y, plane.c.y, -300, 900));
 // console.log(plane.getUV(pa.x, pb.x, pc.x, pa.y, pb.y, pc.y, -300, 900));
 
@@ -192,50 +192,10 @@ fillerPath.attr('fill', '#fff');
 fillerPath.attr('stroke', '#fff');
 fillerPath.attr('opacity', 0.4);
 fillerPath.attr('stroke-opacity', 0.4);
-fillerPath.drag(move, start
-  // (dx, dy, x, y, event) => {
-  //   const lastMousePos = new Point2(x - event.movementX, y - event.movementY);
-  //   lastMousePos.x -= 400;
-  //   lastMousePos.y = 700 - lastMousePos.y;
-  //   // const lastMousePos3D = plane.projectTo3D(lastMousePos.x, lastMousePos.y);
-  //   const lastMousePos3D = new Point2(lastMousePos.x, lastMousePos.y);
-  //
-  //   // const mousePos3D = plane.projectTo3D(x-400, 700-y);
-  //   const mousePos3D = new Point2(x-400, 700-y);
-  //   const deltaMovement3D = mousePos3D.clone().subtract(lastMousePos3D);
-  //
-  //   // const a = plane.a.clone2D().add(deltaMovement3D);
-  //   // getUV a (+400, 700-)
-  //   pa = pa.add(deltaMovement3D);
-  //   // const b = plane.b.clone2D().add(deltaMovement3D);
-  //   // getUV b (+400, 700-)
-  //   pb = pb.add(deltaMovement3D);
-  //   // const c = plane.c.clone2D().add(deltaMovement3D);
-  //   // getUV c (+400, 700-)
-  //   pc = pc.add(deltaMovement3D);
-  //   // const d = plane.d.clone2D().add(deltaMovement3D);
-  //   // getUV d (+400, 700-)
-  //   pd = pd.add(deltaMovement3D);
-  //
-  //   updateCircles();
-  //   updatePaths();
-  //   updateFillerPath();
-  //
-  //   plane.computeZforProjectedPlane();
-  //   anchorSystem.update();
-  // },
-  // (x, y, event) => {
-  //   fillerPath.attr('stroke', '#f00');
-  // },
-  // (event) => {
-  //   fillerPath.attr('stroke', '#00f');
-  // },
-);
+fillerPath.drag(move, start);
 background.push(fillerPath);
 
 foreground.insertAfter(background);
-
-
 
 var anchorSystem = new AnchorSystem([0, 1120, 0, 840]);
 anchorSystem.setPaperInstance(paper);
