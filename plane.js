@@ -10,13 +10,13 @@ class Plane {
     // Vertical vanishing point
     this.cp = null;
     // Central vanishing point
-    this.pa = pa;
+    this.pa = screenPointA;
     // 2D location of perspective point
-    this.pb = pb;
+    this.pb = screenPointB;
     // 2D location of perspective point
-    this.pc = pc;
+    this.pc = screenPointC;
     // 2D location of perspective point
-    this.pd = pd;
+    this.pd = screenPointD;
     // 2D location of perspective point
     this.a = new Point3D(0, 0, 0);
     // 3D location of perspective point

@@ -152,7 +152,7 @@ function perspectivePointsAreInvalid(a, b, c, d) {
 }
 
 var start = function (x, y) {
-  plane = new Plane(centers[0], centers[1], centers[2], centers[3], 300, 300);
+  plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
   uv = plane.screenToUV(x, y);
   lastU = uv.x
   lastV = uv.y
