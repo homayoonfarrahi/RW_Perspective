@@ -59,13 +59,17 @@ const updateFillerPath = function updateFillerPath() {
   fillerPath.attr('opacity', 0.4);
 };
 
-const paper = Raphael(0, 0, 1120, 840);
-const background = paper.set();
-const foreground = paper.set();
-foreground.insertAfter(background);
+var paper = Raphael(0, 0, 1120, 840);
+var backgroundSet = paper.set();
+var nonInteractableSet = paper.set();
+var fillerSet = paper.set();
+var planeEdgeSet = paper.set();
+var planeVertexSet = paper.set();
+var anchorHandleSet = paper.set();
 
-const image = paper.image("https://images.pond5.com/abstract-checkerboard-blur-end-loopable-footage-010559548_prevstill.jpeg", 0, 0, 1120, 840);
-background.push(image);
+
+var image = paper.image("https://images.pond5.com/abstract-checkerboard-blur-end-loopable-footage-010559548_prevstill.jpeg", 0, 0, 1120, 840);
+backgroundSet.push(image);
 
 const circles = [];
 centers = [pa, pb, pc, pd];
@@ -94,7 +98,7 @@ for (let i = 0; i < 4; i++) {
       circle.attr('fill', '#00f');
     },
   );
-  foreground.push(circle);
+  planeVertexSet.push(circle);
 
   circles.push({
     circle: circle,
@@ -126,8 +130,7 @@ for (let from = 0; from < circles.length; from++) {
       path.attr('stroke', '#00f');
     },
   );
-  path.toBack();
-  foreground.push(path);
+  planeEdgeSet.push(path);
 
   const pathObj = {
     path: path,
@@ -148,7 +151,7 @@ function perspectivePointsAreInvalid(a, b, c, d) {
 }
 
 var start = function (x, y) {
-  plane = new Plane(centers[0], centers[1], centers[2], centers[3], 300, 300);
+  plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
   uv = plane.screenToUV(x, y);
   lastU = uv.x;
   lastV = uv.y;
@@ -186,9 +189,7 @@ fillerPath.attr('stroke', '#fff');
 fillerPath.attr('opacity', 0.4);
 fillerPath.attr('stroke-opacity', 0.4);
 fillerPath.drag(move, start);
-background.push(fillerPath);
-
-foreground.insertAfter(background);
+fillerSet.push(fillerPath);
 
 var anchorSystem = new AnchorSystem([0, 1120, 0, 840]);
 anchorSystem.setPaperInstance(paper);
@@ -196,3 +197,10 @@ anchorSystem.addAnchorLine(circles[0], circles[1]);
 anchorSystem.addAnchorLine(circles[1], circles[2]);
 anchorSystem.addAnchorLine(circles[2], circles[3]);
 anchorSystem.addAnchorLine(circles[3], circles[0]);
+
+
+nonInteractableSet.insertAfter(backgroundSet);
+fillerSet.insertAfter(nonInteractableSet);
+planeEdgeSet.insertAfter(fillerSet);
+planeVertexSet.insertAfter(planeEdgeSet);
+anchorHandleSet.insertAfter(planeVertexSet);

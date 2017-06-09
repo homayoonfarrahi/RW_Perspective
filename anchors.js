@@ -99,6 +99,7 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   var pathString = 'M' + this.anchorPoint1.position.x + ',' + this.anchorPoint1.position.y;
   pathString += 'L' + this.anchorPoint2.position.x + ',' + this.anchorPoint2.position.y;
   this.path = paper.path(pathString);
+  nonInteractableSet.push(this.path);
 
   this.setPaperInstance = function(paper) {
     this.paper = paper;
@@ -185,6 +186,7 @@ function AnchorPoint(point, circle, anchorLine) {
       this.handle.attr('fill', '#00f');
     }.bind(this),
   );
+  anchorHandleSet.push(this.handle);
 
   this.setPaperInstance = function(paper) {
     this.paper = paper;
