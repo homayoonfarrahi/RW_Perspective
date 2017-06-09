@@ -99,6 +99,7 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   var pathString = 'M' + this.anchorPoint1.position.x + ',' + this.anchorPoint1.position.y;
   pathString += 'L' + this.anchorPoint2.position.x + ',' + this.anchorPoint2.position.y;
   this.path = paper.path(pathString);
+  nonInteractableSet.push(this.path);
 
   this.setPaperInstance = function(paper) {
     this.paper = paper;
@@ -150,8 +151,10 @@ function AnchorPoint(point, circle, anchorLine) {
   this.anchorLine = anchorLine;
 
   this.handle = paper.circle(this.position.x, this.position.y, 15);
+
   this.handle.attr('fill', '#00f');
   this.handle.attr('opacity', 0.5);
+  var initialHandlePos = undefined;
   this.handle.drag(
     function(dx, dy, x, y, event) {
       var oppositeCircle = this.anchorLine.getCircleOppositeToAnchorPoint(this);
@@ -164,7 +167,7 @@ function AnchorPoint(point, circle, anchorLine) {
         }
       }
 
-      var p1 = new Point2D(x, y);
+      var p1 = initialHandlePos.clone().add(new Point2D(dx, dy));
       var p2 = new Point2D(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
       var intersect = new Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
       this.associatedCircle.circle.attr('cx', intersect.x);
@@ -177,11 +180,13 @@ function AnchorPoint(point, circle, anchorLine) {
     }.bind(this),
     function (x, y, event) {
       this.handle.attr('fill', '#f00');
+      initialHandlePos = new Point2D(this.handle.attr('cx'), this.handle.attr('cy'));
     }.bind(this),
     function (event) {
       this.handle.attr('fill', '#00f');
     }.bind(this),
   );
+  anchorHandleSet.push(this.handle);
 
   this.setPaperInstance = function(paper) {
     this.paper = paper;
