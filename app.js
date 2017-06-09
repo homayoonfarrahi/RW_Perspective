@@ -114,22 +114,44 @@ for (let from = 0; from < circles.length; from++) {
   if (to >= circles.length) {
     to = 0;
   }
-
+  function getCenter(i) {
+    return centers[i % 4];
+  }
   const pathString = getPathString(circles[from], circles[to]);
   const path = paper.path(pathString);
+
+  (function (from) {
+    var vanishingPoint;
+    var otherLine1;
+    var otherLine2;
+
+    var edgeDragStart = function (x, y) {
+      otherLine1 = new Line(getCenter(from), getCenter(from + 3));
+      otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
+      vanishingPoint = new Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Line(getCenter(from + 2), getCenter(from + 3)));
+      path.attr('stroke', '#f00');
+    }
+
+    var edgeDragMove = function (dx, dy, x, y) {
+      var line = new Line(vanishingPoint, new Point2D(x, y));
+      var newPoint1 = otherLine1.findIntersectWithLine(line);
+      var newPoint2 = otherLine2.findIntersectWithLine(line);
+      getCenter(from).setTo(newPoint1);
+      getCenter(from + 1).setTo(newPoint2);
+      updateCircles();
+      updatePaths();
+      updateFillerPath();
+      anchorSystem.update();
+    }
+    path.drag(edgeDragMove, edgeDragStart, (event) => {
+      path.attr('stroke', '#00f');
+    });
+  })(from);
+
   path.attr('stroke', '#00f');
   path.attr('stroke-width', 10);
   path.attr('stroke-opacity', 0.5);
-  path.drag(
-    (dx, dy, x, y, event) => {
-    },
-    (x, y, event) => {
-      path.attr('stroke', '#f00');
-    },
-    (event) => {
-      path.attr('stroke', '#00f');
-    },
-  );
+
   planeEdgeSet.push(path);
 
   const pathObj = {
@@ -168,7 +190,7 @@ var move = function (dx, dy, x, y) {
   var tmpPC = plane.uvToScreen(offsetU + plane.uvWidth, offsetV + plane.uvHeight);
   var tmpPD = plane.uvToScreen(offsetU + plane.uvWidth, offsetV);
 
-  if (perspectivePointsAreInvalid(tmpPA,tmpPB,tmpPC,tmpPD)) {
+  if (perspectivePointsAreInvalid(tmpPA, tmpPB, tmpPC, tmpPD)) {
     return;
   }
 
