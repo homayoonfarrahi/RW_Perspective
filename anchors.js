@@ -50,9 +50,6 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.path = null;
   this.anchorSystem = anchorSystem;
 
-  var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-  var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
-
   this.computeAnchorPositions = function() {
     var anchors = [];
     var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
@@ -80,21 +77,21 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     return anchors;
   }
 
+  var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
+  var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
   var anchors = this.computeAnchorPositions();
-  for (var i=0 ; i<anchors.length ; i++) {
-    var distance1 = anchors[i].distanceFromPoint(p1);
-    var distance2 = anchors[i].distanceFromPoint(p2);
-    var anchorPoint = null;
-    if (distance1 <= distance2) {
-      anchorPoint = new AnchorPoint(anchors[i], this.circle1, this);
-      anchorPoint.setPaperInstance(this.paper);
-      this.anchorPoint1 = anchorPoint;
-    } else {
-      anchorPoint = new AnchorPoint(anchors[i], this.circle2, this);
-      anchorPoint.setPaperInstance(this.paper);
-      this.anchorPoint2 = anchorPoint;
-    }
+  var deltaP = p2.clone().subtract(p1);
+  var deltaAnchor = anchors[1].clone().subtract(anchors[0]);
+  if ((deltaP.x * deltaAnchor.x >= 0) && (deltaP.y * deltaAnchor.y >= 0)) {
+    this.anchorPoint1 = new AnchorPoint(anchors[0], this.circle1, this);
+    this.anchorPoint2 = new AnchorPoint(anchors[1], this.circle2, this);
+  } else {
+    this.anchorPoint1 = new AnchorPoint(anchors[1], this.circle1, this);
+    this.anchorPoint2 = new AnchorPoint(anchors[0], this.circle2, this);
   }
+
+  this.anchorPoint1.setPaperInstance(this.paper);
+  this.anchorPoint2.setPaperInstance(this.paper);
 
   var pathString = 'M' + this.anchorPoint1.position.x + ',' + this.anchorPoint1.position.y;
   pathString += 'L' + this.anchorPoint2.position.x + ',' + this.anchorPoint2.position.y;
@@ -106,16 +103,13 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   }
 
   this.getCircleOppositeToAnchorPoint = function(anchorPoint) {
-    var circleCenter1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-    var circleCenter2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
-    var distance1 = anchorPoint.position.distanceFromPoint(circleCenter1);
-    var distance2 = anchorPoint.position.distanceFromPoint(circleCenter2);
-
-    if (distance1 <= distance2) {
+    if (anchorPoint === this.anchorPoint1) {
       return this.circle2;
-    } else {
+    } else if (anchorPoint === this.anchorPoint2){
       return this.circle1;
     }
+
+    console.error('The given anchor point should be one of the points of this anchor line');
   }
 
   this.getLine = function() {
@@ -129,14 +123,14 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
     var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
     var anchors = this.computeAnchorPositions();
-    for (var i=0 ; i<anchors.length ; i++) {
-      var distance1 = anchors[i].distanceFromPoint(p1);
-      var distance2 = anchors[i].distanceFromPoint(p2);
-      if (distance1 <= distance2) {
-        this.anchorPoint1.setPosition(anchors[i]);
-      } else {
-        this.anchorPoint2.setPosition(anchors[i]);
-      }
+    var deltaP = p2.clone().subtract(p1);
+    var deltaAnchor = anchors[1].clone().subtract(anchors[0]);
+    if ((deltaP.x * deltaAnchor.x >= 0) && (deltaP.y * deltaAnchor.y >= 0)) {
+      this.anchorPoint1.setPosition(anchors[0]);
+      this.anchorPoint2.setPosition(anchors[1]);
+    } else {
+      this.anchorPoint1.setPosition(anchors[1]);
+      this.anchorPoint2.setPosition(anchors[0]);
     }
 
     var pathString = 'M' + this.anchorPoint1.position.x + ',' + this.anchorPoint1.position.y;
