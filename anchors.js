@@ -50,27 +50,27 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.path = null;
   this.anchorSystem = anchorSystem;
 
-  var p1 = new Point2(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-  var p2 = new Point2(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+  var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
+  var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
 
   this.computeAnchorPositions = function() {
     var anchors = [];
-    var p1 = new Point2(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-    var p2 = new Point2(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
-    if (this.anchorSystem.isInsideBoundaries(new Point2(this.anchorSystem.minX, new Line(p1, p2).getYforX(this.anchorSystem.minX)))) {
-      anchors.push(new Point2(this.anchorSystem.minX, new Line(p1, p2).getYforX(this.anchorSystem.minX)));
+    var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
+    var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+    if (this.anchorSystem.isInsideBoundaries(new Point2D(this.anchorSystem.minX, new Line(p1, p2).getYforX(this.anchorSystem.minX)))) {
+      anchors.push(new Point2D(this.anchorSystem.minX, new Line(p1, p2).getYforX(this.anchorSystem.minX)));
     }
 
-    if (this.anchorSystem.isInsideBoundaries(new Point2(this.anchorSystem.maxX, new Line(p1, p2).getYforX(this.anchorSystem.maxX)))) {
-      anchors.push(new Point2(this.anchorSystem.maxX, new Line(p1, p2).getYforX(this.anchorSystem.maxX)));
+    if (this.anchorSystem.isInsideBoundaries(new Point2D(this.anchorSystem.maxX, new Line(p1, p2).getYforX(this.anchorSystem.maxX)))) {
+      anchors.push(new Point2D(this.anchorSystem.maxX, new Line(p1, p2).getYforX(this.anchorSystem.maxX)));
     }
 
-    if (this.anchorSystem.isInsideBoundaries(new Point2(new Line(p1, p2).getXforY(this.anchorSystem.minY), this.anchorSystem.minY))) {
-      anchors.push(new Point2(new Line(p1, p2).getXforY(this.anchorSystem.minY), this.anchorSystem.minY));
+    if (this.anchorSystem.isInsideBoundaries(new Point2D(new Line(p1, p2).getXforY(this.anchorSystem.minY), this.anchorSystem.minY))) {
+      anchors.push(new Point2D(new Line(p1, p2).getXforY(this.anchorSystem.minY), this.anchorSystem.minY));
     }
 
-    if (this.anchorSystem.isInsideBoundaries(new Point2(new Line(p1, p2).getXforY(this.anchorSystem.maxY), this.anchorSystem.maxY))) {
-      anchors.push(new Point2(new Line(p1, p2).getXforY(this.anchorSystem.maxY), this.anchorSystem.maxY));
+    if (this.anchorSystem.isInsideBoundaries(new Point2D(new Line(p1, p2).getXforY(this.anchorSystem.maxY), this.anchorSystem.maxY))) {
+      anchors.push(new Point2D(new Line(p1, p2).getXforY(this.anchorSystem.maxY), this.anchorSystem.maxY));
     }
 
     if (anchors.length !== 2) {
@@ -105,8 +105,8 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   }
 
   this.getCircleOppositeToAnchorPoint = function(anchorPoint) {
-    var circleCenter1 = new Point2(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-    var circleCenter2 = new Point2(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+    var circleCenter1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
+    var circleCenter2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
     var distance1 = anchorPoint.position.distanceFromPoint(circleCenter1);
     var distance2 = anchorPoint.position.distanceFromPoint(circleCenter2);
 
@@ -118,15 +118,15 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   }
 
   this.getLine = function() {
-    var p1 = new Point2(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-    var p2 = new Point2(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+    var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
+    var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
 
     return new Line(p1, p2);
   }
 
   this.update = function() {
-    var p1 = new Point2(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-    var p2 = new Point2(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+    var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
+    var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
     var anchors = this.computeAnchorPositions();
     for (var i=0 ; i<anchors.length ; i++) {
       var distance1 = anchors[i].distanceFromPoint(p1);
@@ -166,8 +166,8 @@ function AnchorPoint(point, circle, anchorLine) {
         }
       }
 
-      var p1 = initialHandlePos.clone().add(new Point2(dx, dy));
-      var p2 = new Point2(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
+      var p1 = initialHandlePos.clone().add(new Point2D(dx, dy));
+      var p2 = new Point2D(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
       var intersect = new Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
       this.associatedCircle.circle.attr('cx', intersect.x);
       this.associatedCircle.circle.attr('cy', intersect.y);

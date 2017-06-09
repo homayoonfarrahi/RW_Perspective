@@ -1,10 +1,7 @@
-pa = new Point2(325, 350);
-pb = new Point2(500, 375);
-pc = new Point2(750, 600);
-pd = new Point2(30, 500);
-
-
-
+pa = new Point2D(256, 498);
+pb = new Point2D(255, 673);
+pc = new Point2D(486, 607);
+pd = new Point2D(445, 455);
 
 const getPathString = function getPathString(circle1, circle2) {
   const startX = circle1.circle.attr('cx');
@@ -19,7 +16,7 @@ const getPathString = function getPathString(circle1, circle2) {
 const getClosedPathString = function getClosedPathString() {
   let pathString = 'M' + circles[0].circle.attr('cx') + ',' + circles[0].circle.attr('cy');
 
-  for (let i=1 ; i<circles.length ; i++) {
+  for (let i = 1; i < circles.length; i++) {
     pathString += 'L' + circles[i].circle.attr('cx') + ',' + circles[i].circle.attr('cy');
   }
 
@@ -29,14 +26,14 @@ const getClosedPathString = function getClosedPathString() {
 }
 
 const updateCircles = function updateCircles() {
-  for (let i=0 ; i<circles.length ; i++) {
+  for (let i = 0; i < circles.length; i++) {
     circles[i].circle.attr('cx', centers[i].x);
     circles[i].circle.attr('cy', centers[i].y);
   }
 }
 
 const updatePaths = function updatePaths() {
-  for (let i=0 ; i<paths.length ; i++) {
+  for (let i = 0; i < paths.length; i++) {
     const pathString = getPathString(paths[i].circle1, paths[i].circle2)
     paths[i].path.attr('path', pathString);
   }
@@ -44,7 +41,7 @@ const updatePaths = function updatePaths() {
 
 const updatePathsForCircle = function updatePathsForCircle(circle) {
   let i = 0;
-  for (i=0 ; i<circles.length ; i++) {
+  for (i = 0; i < circles.length; i++) {
     if (circles[i].circle === circle) break;
   }
 
@@ -72,7 +69,7 @@ background.push(image);
 
 const circles = [];
 centers = [pa, pb, pc, pd];
-for (let i=0 ; i<4 ; i++) {
+for (let i = 0; i < 4; i++) {
   const circle = paper.circle(centers[i].x, centers[i].y, 15);
   circle.attr('fill', '#00f');
   circle.attr('opacity', 0.5);
@@ -80,7 +77,7 @@ for (let i=0 ; i<4 ; i++) {
   circle.drag(
     (dx, dy, x, y, event) => {
       var i = 0;
-      for (i=0 ; i<circles.length ; i++) {
+      for (i = 0; i < circles.length; i++) {
         if (circles[i].circle === circle) break;
       }
       circles[i].point.setTo(initialCirclePos.clone().add(new Point2(dx, dy)));
@@ -108,7 +105,7 @@ for (let i=0 ; i<4 ; i++) {
 }
 
 const paths = [];
-for (let from=0 ; from<circles.length ; from++) {
+for (let from = 0; from < circles.length; from++) {
   let to = from + 1;
   if (to >= circles.length) {
     to = 0;
@@ -143,20 +140,21 @@ for (let from=0 ; from<circles.length ; from++) {
 
   paths.push(pathObj);
 }
+errorNegativeZ = 'error negative z';
 
-// for (var i=0 ; i<circles.length ; i++) {
-//   circles[i].circle.toBack();
-// }
+function perspectivePointsAreInvalid(a, b, c, d) {
+  return (a == errorNegativeZ || b == errorNegativeZ || c == errorNegativeZ || d == errorNegativeZ) ||
+    (Math.abs(a.x - c.x) < 10 || Math.abs(a.y - c.y) < 10);
+}
 
-var start = function(x, y) {
+var start = function (x, y) {
   plane = new Plane(centers[0], centers[1], centers[2], centers[3], 300, 300);
   uv = plane.screenToUV(x, y);
   lastU = uv.x;
   lastV = uv.y;
 }
 
-errorNegativeZ = 'error negative z';
-var move = function(dx, dy, x, y) {
+var move = function (dx, dy, x, y) {
   uv = plane.screenToUV(x, y);
 
   var offsetU = uv.x - lastU;
@@ -166,10 +164,11 @@ var move = function(dx, dy, x, y) {
   var tmpPB = plane.uvToScreen(offsetU, offsetV + plane.uvHeight);
   var tmpPC = plane.uvToScreen(offsetU + plane.uvWidth, offsetV + plane.uvHeight);
   var tmpPD = plane.uvToScreen(offsetU + plane.uvWidth, offsetV);
-  if (tmpPA == errorNegativeZ || tmpPB == errorNegativeZ || tmpPC == errorNegativeZ || tmpPD == errorNegativeZ) {
+
+  if (perspectivePointsAreInvalid(tmpPA,tmpPB,tmpPC,tmpPD)) {
     return;
   }
-  if(Math.abs(tmpPA.x - tmpPC.x) < 10 || Math.abs(tmpPA.y - tmpPC.y) < 10) return;
+
   centers[0].setTo(tmpPA);
   centers[1].setTo(tmpPB);
   centers[2].setTo(tmpPC);
@@ -190,8 +189,6 @@ fillerPath.drag(move, start);
 background.push(fillerPath);
 
 foreground.insertAfter(background);
-
-
 
 var anchorSystem = new AnchorSystem([0, 1120, 0, 840]);
 anchorSystem.setPaperInstance(paper);
