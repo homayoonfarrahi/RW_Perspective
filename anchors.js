@@ -212,7 +212,8 @@ function AnchorPoint(point, circle, anchorLine) {
   }
 
   this.update = function() {
-    if (!this.anchorLine.anchorSystem.isCloseToRegion(this.associatedCircle.point, this.associatedCircle.circle.attr('r'))) {
+    if (!this.anchorLine.anchorSystem.isCloseToRegion(this.anchorLine.circle1.point, -this.anchorLine.circle1.radius)
+        && !this.anchorLine.anchorSystem.isCloseToRegion(this.anchorLine.circle2.point, -this.anchorLine.circle2.radius)) {
       this.handle.hide();
     } else {
       this.handle.show();

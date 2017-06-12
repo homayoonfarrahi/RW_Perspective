@@ -74,7 +74,8 @@ backgroundSet.push(image);
 const circles = [];
 centers = [pa, pb, pc, pd];
 for (let i = 0; i < 4; i++) {
-  const circle = paper.circle(centers[i].x, centers[i].y, 7);
+  var radius = 7;
+  const circle = paper.circle(centers[i].x, centers[i].y, radius);
   circle.attr('fill', '#00f');
   circle.attr('opacity', 0.5);
   var initialCirclePos = undefined;
@@ -103,6 +104,7 @@ for (let i = 0; i < 4; i++) {
   circles.push({
     circle: circle,
     point: centers[i],
+    radius: radius,
     path1: undefined,
     path2: undefined,
   });
