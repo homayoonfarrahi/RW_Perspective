@@ -68,13 +68,13 @@ var planeVertexSet = paper.set();
 var anchorHandleSet = paper.set();
 
 
-var image = paper.image("https://images.pond5.com/abstract-checkerboard-blur-end-loopable-footage-010559548_prevstill.jpeg", 0, 0, 1120, 840);
+var image = paper.image("outdoor.jpg", 0, 0, 1120, 840);
 backgroundSet.push(image);
 
 const circles = [];
 centers = [pa, pb, pc, pd];
 for (let i = 0; i < 4; i++) {
-  const circle = paper.circle(centers[i].x, centers[i].y, 15);
+  const circle = paper.circle(centers[i].x, centers[i].y, 7);
   circle.attr('fill', '#00f');
   circle.attr('opacity', 0.5);
   var initialCirclePos = undefined;
@@ -149,8 +149,9 @@ for (let from = 0; from < circles.length; from++) {
   })(from);
 
   path.attr('stroke', '#00f');
-  path.attr('stroke-width', 10);
-  path.attr('stroke-opacity', 0.5);
+  path.attr('stroke-width', 7);
+  path.attr('stroke-opacity', 0.3);
+  path.attr('stroke-linecap', 'round');
 
   planeEdgeSet.push(path);
 

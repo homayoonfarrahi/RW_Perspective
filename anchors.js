@@ -163,7 +163,7 @@ function AnchorPoint(point, circle, anchorLine) {
   this.position = point;
   this.anchorLine = anchorLine;
 
-  this.handle = paper.circle(this.position.x, this.position.y, 15);
+  this.handle = paper.circle(this.position.x, this.position.y, 10);
 
   this.handle.attr('fill', '#00f');
   this.handle.attr('opacity', 0.5);
