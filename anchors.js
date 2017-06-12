@@ -44,6 +44,14 @@ function AnchorSystem(boundaries) {
     return result;
   }
 
+  this.getMovementDirection = function(anchorPoint) {
+    if (anchorPoint.position.x === this.minX || anchorPoint.position.x === this.maxX) {
+      return 'vertical';
+    } else if (anchorPoint.position.y === this.minY || anchorPoint.position.y === this.maxY) {
+      return 'horizontal';
+    }
+  }
+
   this.update = function() {
     for (var i=0 ; i<this.anchorLines.length ; i++) {
       this.anchorLines[i].update();
@@ -219,18 +227,35 @@ function AnchorPoint(point, circle, anchorLine) {
       var intersect = new Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
       this.associatedCircle.circle.attr('cx', intersect.x);
       this.associatedCircle.circle.attr('cy', intersect.y);
+
+      var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
+      if (movementDirection === 'horizontal') {
+        document.body.style.cursor = 'ew-resize';
+      } else if (movementDirection === 'vertical') {
+        document.body.style.cursor = 'ns-resize';
+      }
+
       this.associatedCircle.point.x = intersect.x;
       this.associatedCircle.point.y = intersect.y;
       this.anchorLine.anchorSystem.update();
       updatePaths();
       updateFillerPath();
+      grid.update();
     }.bind(this),
     function (x, y, event) {
       this.handle.attr('fill', '#f00');
       initialHandlePos = new Point2D(this.handle.attr('cx'), this.handle.attr('cy'));
+
+      var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
+      if (movementDirection === 'horizontal') {
+        document.body.style.cursor = 'ew-resize';
+      } else if (movementDirection === 'vertical') {
+        document.body.style.cursor = 'ns-resize';
+      }
     }.bind(this),
     function (event) {
       this.handle.attr('fill', '#00f');
+      document.body.style.cursor = 'default';
     }.bind(this),
   );
   anchorHandleSet.push(this.handle);

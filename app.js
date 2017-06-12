@@ -94,10 +94,12 @@ for (let i = 0; i < 4; i++) {
     },
     (x, y, event) => {
       circle.attr('fill', '#f00');
+      document.body.style.cursor = 'move';
       initialCirclePos = new Point2D(circle.attr('cx'), circle.attr('cy'));
     },
     (event) => {
       circle.attr('fill', '#00f');
+      document.body.style.cursor = 'default';
     },
   );
   planeVertexSet.push(circle);
@@ -182,6 +184,11 @@ var start = function (x, y) {
   uv = plane.screenToUV(x, y);
   lastU = uv.x;
   lastV = uv.y;
+  document.body.style.cursor = 'move';
+}
+
+var end = function () {
+  document.body.style.cursor = 'default';
 }
 
 var move = function (dx, dy, x, y) {
@@ -216,7 +223,7 @@ fillerPath.attr('fill', '#fff');
 fillerPath.attr('stroke', '#fff');
 fillerPath.attr('opacity', 0.4);
 fillerPath.attr('stroke-opacity', 0.4);
-fillerPath.drag(move, start);
+fillerPath.drag(move, start, end);
 fillerSet.push(fillerPath);
 
 var anchorSystem = new AnchorSystem([0, 1120, 0, 840]);
