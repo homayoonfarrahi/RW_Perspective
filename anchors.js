@@ -56,8 +56,10 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.circle2 = circle2;
   this.anchorPoint1 = null;
   this.anchorPoint2 = null;
-  this.path1 = null;
-  this.path2 = null;
+  this.path1wide = null;
+  this.path1narrow = null;
+  this.path2wide = null;
+  this.path2narrow = null;
   this.middlePath = null;
   this.anchorSystem = anchorSystem;
 

@@ -90,6 +90,7 @@ for (let i = 0; i < 4; i++) {
       updatePathsForCircle(circle);
       updateFillerPath();
       anchorSystem.update();
+      grid.update();
     },
     (x, y, event) => {
       circle.attr('fill', '#f00');
@@ -144,6 +145,7 @@ for (let from = 0; from < circles.length; from++) {
       updatePaths();
       updateFillerPath();
       anchorSystem.update();
+      grid.update();
     }
     path.drag(edgeDragMove, edgeDragStart, (event) => {
       path.attr('stroke', '#00f');
@@ -205,6 +207,7 @@ var move = function (dx, dy, x, y) {
   updatePaths();
   updateFillerPath();
   anchorSystem.update();
+  grid.update();
 }
 
 const pathString = getClosedPathString();
@@ -222,6 +225,8 @@ anchorSystem.addAnchorLine(circles[0], circles[1]);
 anchorSystem.addAnchorLine(circles[1], circles[2]);
 anchorSystem.addAnchorLine(circles[2], circles[3]);
 anchorSystem.addAnchorLine(circles[3], circles[0]);
+
+var grid = new Grid(centers[0], centers[1], centers[2], centers[3], 5.5, 3.5, paper);
 
 
 nonInteractableSet.insertAfter(backgroundSet);

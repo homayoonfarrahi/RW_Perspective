@@ -45,6 +45,17 @@ class Line {
         return Line.findIntersect(this.p1, this.p2, line.p1, line.p2);
     }
 
+    getSegmentPoints(partCount) {
+      var points = [];
+      var segmentDirection = this.p2.clone().subtract(this.p1).divideBy(partCount);
+      for (var i = 0 ; i < Math.ceil(partCount) - 1 ; i++) {
+        var segmentPoint = this.p1.clone().add(segmentDirection.clone().multiplyBy(i + 1));
+        points.push(segmentPoint);
+      }
+
+      return points;
+    }
+
     static findIntersect(a, b, c, d) {
         //finds intersection between line a-b and line c-d
         var a1 = 0,
