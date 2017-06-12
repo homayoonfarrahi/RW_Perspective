@@ -56,7 +56,9 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.circle2 = circle2;
   this.anchorPoint1 = null;
   this.anchorPoint2 = null;
-  this.path = null;
+  this.path1 = null;
+  this.path2 = null;
+  this.middlePath = null;
   this.anchorSystem = anchorSystem;
 
   this.computeAnchorPositions = function() {
@@ -119,6 +121,21 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     return new Line(p1, p2);
   }
 
+  this.setupExtendedPaths = function(widePath, narrowPath, p1, p2) {
+    var pathString = 'M' + p1.x + ',' + p1.y;
+    pathString += 'L' + p2.x + ',' + p2.y;
+    widePath.attr('path', pathString);
+    narrowPath.attr('path', pathString);
+
+    widePath.attr('stroke', '#000');
+    narrowPath.attr('stroke', '#fff');
+    widePath.attr('stroke-width', 3);
+    narrowPath.attr('stroke-width', 1);
+
+    widePath.show();
+    narrowPath.show();
+  }
+
   this.update = function() {
     var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
     var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
@@ -134,12 +151,19 @@ function AnchorLine(circle1, circle2, anchorSystem) {
         this.anchorPoint2.setPosition(anchors[0]);
       }
 
-      var pathString = 'M' + this.anchorPoint1.position.x + ',' + this.anchorPoint1.position.y;
-      pathString += 'L' + this.anchorPoint2.position.x + ',' + this.anchorPoint2.position.y;
-      this.path.attr('path', pathString);
-      this.path.show();
+      this.setupExtendedPaths(this.path1wide, this.path1narrow, this.anchorPoint1.position, this.circle1.point);
+      this.setupExtendedPaths(this.path2wide, this.path2narrow, this.anchorPoint2.position, this.circle2.point);
+
+      var pathString = 'M' + this.circle1.point.x + ',' + this.circle1.point.y;
+      pathString += 'L' + this.circle2.point.x + ',' + this.circle2.point.y;
+      this.middlePath.attr('path', pathString);
+      this.middlePath.show();
     } else {
-      this.path.hide();
+      this.path1wide.hide();
+      this.path1narrow.hide();
+      this.path2wide.hide();
+      this.path2narrow.hide();
+      this.middlePath.hide();
     }
 
     this.anchorPoint1.update();
@@ -152,8 +176,16 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.anchorPoint1.setPaperInstance(this.paper);
   this.anchorPoint2.setPaperInstance(this.paper);
 
-  this.path = paper.path('M0,0L0,0');
-  nonInteractableSet.push(this.path);
+  this.path1wide = paper.path('M0,0L0,0');
+  this.path1narrow = paper.path('M0,0L0,0');
+  this.path2wide = paper.path('M0,0L0,0');
+  this.path2narrow = paper.path('M0,0L0,0');
+  this.middlePath = paper.path('M0,0L0,0');
+  nonInteractableSet.push(this.path1wide);
+  nonInteractableSet.push(this.path1narrow);
+  nonInteractableSet.push(this.path2wide);
+  nonInteractableSet.push(this.path2narrow);
+  nonInteractableSet.push(this.middlePath);
 
   this.update();
 }
@@ -187,7 +219,7 @@ function AnchorPoint(point, circle, anchorLine) {
       this.associatedCircle.circle.attr('cy', intersect.y);
       this.associatedCircle.point.x = intersect.x;
       this.associatedCircle.point.y = intersect.y;
-      this.anchorLine.update();
+      this.anchorLine.anchorSystem.update();
       updatePaths();
       updateFillerPath();
     }.bind(this),
