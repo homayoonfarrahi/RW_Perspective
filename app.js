@@ -3,20 +3,20 @@ pb = new Point2D(255, 673);
 pc = new Point2D(486, 607);
 pd = new Point2D(445, 455);
 
-const getPathString = function getPathString(circle1, circle2) {
-  const startX = circle1.circle.attr('cx');
-  const startY = circle1.circle.attr('cy');
-  const endX = circle2.circle.attr('cx');
-  const endY = circle2.circle.attr('cy');
-  const pathString = 'M' + startX + ',' + startY + 'L' + endX + ',' + endY;
+var getPathString = function getPathString(circle1, circle2) {
+  var startX = circle1.circle.attr('cx');
+  var startY = circle1.circle.attr('cy');
+  var endX = circle2.circle.attr('cx');
+  var endY = circle2.circle.attr('cy');
+  var pathString = 'M' + startX + ',' + startY + 'L' + endX + ',' + endY;
 
   return pathString;
 }
 
-const getClosedPathString = function getClosedPathString() {
-  let pathString = 'M' + circles[0].circle.attr('cx') + ',' + circles[0].circle.attr('cy');
+var getClosedPathString = function getClosedPathString() {
+  var pathString = 'M' + circles[0].circle.attr('cx') + ',' + circles[0].circle.attr('cy');
 
-  for (let i = 1; i < circles.length; i++) {
+  for (var i = 1; i < circles.length; i++) {
     pathString += 'L' + circles[i].circle.attr('cx') + ',' + circles[i].circle.attr('cy');
   }
 
@@ -25,35 +25,35 @@ const getClosedPathString = function getClosedPathString() {
   return pathString;
 }
 
-const updateCircles = function updateCircles() {
-  for (let i = 0; i < circles.length; i++) {
+var updateCircles = function updateCircles() {
+  for (var i = 0; i < circles.length; i++) {
     circles[i].circle.attr('cx', centers[i].x);
     circles[i].circle.attr('cy', centers[i].y);
   }
 }
 
-const updatePaths = function updatePaths() {
-  for (let i = 0; i < paths.length; i++) {
-    const pathString = getPathString(paths[i].circle1, paths[i].circle2)
+var updatePaths = function updatePaths() {
+  for (var i = 0; i < paths.length; i++) {
+    var pathString = getPathString(paths[i].circle1, paths[i].circle2)
     paths[i].path.attr('path', pathString);
   }
 }
 
-const updatePathsForCircle = function updatePathsForCircle(circle) {
-  let i = 0;
+var updatePathsForCircle = function updatePathsForCircle(circle) {
+  var i = 0;
   for (i = 0; i < circles.length; i++) {
     if (circles[i].circle === circle) break;
   }
 
-  const path1 = circles[i].path1;
+  var path1 = circles[i].path1;
   path1.path.attr('path', getPathString(path1.circle1, path1.circle2));
 
-  const path2 = circles[i].path2;
+  var path2 = circles[i].path2;
   path2.path.attr('path', getPathString(path2.circle1, path2.circle2));
 };
 
-const updateFillerPath = function updateFillerPath() {
-  const pathString = getClosedPathString();
+var updateFillerPath = function updateFillerPath() {
+  var pathString = getClosedPathString();
   fillerPath.attr('path', pathString);
   fillerPath.attr('fill', '#fff');
   fillerPath.attr('opacity', 0.4);
@@ -71,16 +71,18 @@ var anchorHandleSet = paper.set();
 var image = paper.image("outdoor.jpg", 0, 0, 1120, 840);
 backgroundSet.push(image);
 
-const circles = [];
+var circles = [];
 centers = [pa, pb, pc, pd];
-for (let i = 0; i < 4; i++) {
+for (var i = 0; i < 4; i++) {
   var radius = 7;
-  const circle = paper.circle(centers[i].x, centers[i].y, radius);
+  var circle = paper.circle(centers[i].x, centers[i].y, radius);
   circle.attr('fill', '#00f');
   circle.attr('opacity', 0.5);
-  var initialCirclePos = undefined;
-  circle.drag(
-    (dx, dy, x, y, event) => {
+
+  (function (i, circle) {
+    var initialCirclePos = undefined;
+
+    var circleDragMove = function(dx, dy, x, y, event) {
       var i = 0;
       for (i = 0; i < circles.length; i++) {
         if (circles[i].circle === circle) break;
@@ -91,17 +93,21 @@ for (let i = 0; i < 4; i++) {
       updateFillerPath();
       anchorSystem.update();
       grid.update();
-    },
-    (x, y, event) => {
+    }
+
+    var circleDragStart = function (x, y, event) {
       circle.attr('fill', '#f00');
       document.body.style.cursor = 'move';
       initialCirclePos = new Point2D(circle.attr('cx'), circle.attr('cy'));
-    },
-    (event) => {
+    }
+
+    var circleDragEnd = function (event) {
       circle.attr('fill', '#00f');
       document.body.style.cursor = 'default';
-    },
-  );
+    }
+
+    circle.drag(circleDragMove, circleDragStart, circleDragEnd);
+  })(i, circle);
   planeVertexSet.push(circle);
 
   circles.push({
@@ -113,19 +119,19 @@ for (let i = 0; i < 4; i++) {
   });
 }
 
-const paths = [];
-for (let from = 0; from < circles.length; from++) {
-  let to = from + 1;
+var paths = [];
+for (var from = 0; from < circles.length; from++) {
+  var to = from + 1;
   if (to >= circles.length) {
     to = 0;
   }
   function getCenter(i) {
     return centers[i % 4];
   }
-  const pathString = getPathString(circles[from], circles[to]);
-  const path = paper.path(pathString);
+  var pathString = getPathString(circles[from], circles[to]);
+  var path = paper.path(pathString);
 
-  (function (from) {
+  (function (from, path) {
     var vanishingPoint;
     var otherLine1;
     var otherLine2;
@@ -151,10 +157,13 @@ for (let from = 0; from < circles.length; from++) {
       anchorSystem.update();
       grid.update();
     }
-    path.drag(edgeDragMove, edgeDragStart, (event) => {
+
+    var edgeDragEnd = function (event) {
       path.attr('stroke', '#00f');
-    });
-  })(from);
+    }
+
+    path.drag(edgeDragMove, edgeDragStart, edgeDragEnd);
+  })(from, path);
 
   path.attr('stroke', '#00f');
   path.attr('stroke-width', 7);
@@ -163,7 +172,7 @@ for (let from = 0; from < circles.length; from++) {
 
   planeEdgeSet.push(path);
 
-  const pathObj = {
+  var pathObj = {
     path: path,
     circle1: circles[from],
     circle2: circles[to],
@@ -219,8 +228,8 @@ var move = function (dx, dy, x, y) {
   grid.update();
 }
 
-const pathString = getClosedPathString();
-const fillerPath = paper.path(pathString);
+var pathString = getClosedPathString();
+var fillerPath = paper.path(pathString);
 fillerPath.attr('fill', '#fff');
 fillerPath.attr('stroke', '#fff');
 fillerPath.attr('opacity', 0.4);

@@ -1,57 +1,53 @@
-class Plane {
-  constructor(screenPointA, screenPointB, screenPointC, screenPointD, uvWidth, uvHeight) {
+function Plane(screenPointA, screenPointB, screenPointC, screenPointD, uvWidth, uvHeight) {
+  this.uvWidth = uvWidth;
+  this.uvHeight = uvHeight;
 
-    this.uvWidth = uvWidth;
-    this.uvHeight = uvHeight;
+  this.vh = null;
+  // Horizontal vanishing point
+  this.vv = null;
+  // Vertical vanishing point
+  this.cp = null;
+  // Central vanishing point
+  this.pa = screenPointA;
+  // 2D location of perspective point
+  this.pb = screenPointB;
+  // 2D location of perspective point
+  this.pc = screenPointC;
+  // 2D location of perspective point
+  this.pd = screenPointD;
+  // 2D location of perspective point
+  this.a = new Point3D(0, 0, 0);
+  // 3D location of perspective point
+  this.b = new Point3D(0, 0, 0);
+  // 3D location of perspective point
+  this.c = new Point3D(0, 0, 0);
+  // 3D location of perspective point
+  this.d = new Point3D(0, 0, 0);
+  // 3D location of perspective point
+  this.tr_ac = null;
+  // 2D transverse intersection point with vh-vv horizon line
+  this.tr_bd = null;
+  // 2D transverse intersection point with vh-vv horizon line
 
-    this.vh = null;
-    // Horizontal vanishing point
-    this.vv = null;
-    // Vertical vanishing point
-    this.cp = null;
-    // Central vanishing point
-    this.pa = screenPointA;
-    // 2D location of perspective point
-    this.pb = screenPointB;
-    // 2D location of perspective point
-    this.pc = screenPointC;
-    // 2D location of perspective point
-    this.pd = screenPointD;
-    // 2D location of perspective point
-    this.a = new Point3D(0, 0, 0);
-    // 3D location of perspective point
-    this.b = new Point3D(0, 0, 0);
-    // 3D location of perspective point
-    this.c = new Point3D(0, 0, 0);
-    // 3D location of perspective point
-    this.d = new Point3D(0, 0, 0);
-    // 3D location of perspective point
-    this.tr_ac = null;
-    // 2D transverse intersection point with vh-vv horizon line
-    this.tr_bd = null;
-    // 2D transverse intersection point with vh-vv horizon line
-    this.computeZforProjectedPlane();
-  }
-
-  computeZforProjectedPlane() {
+  this.computeZforProjectedPlane = function() {
     var zDepth = 10;
     //computes the z value for a projected plane
     //z increases into the screen, z decreases out of the screen
     //zDepth sets the z value for the point closest to the screen, and everything else is relative to that point
 
     var avh = 0,
-      bvh = 0,
-      cvh = 0,
-      dvh = 0;
+    bvh = 0,
+    cvh = 0,
+    dvh = 0;
     var avv = 0,
-      bvv = 0,
-      cvv = 0,
-      dvv = 0;
+    bvv = 0,
+    cvv = 0,
+    dvv = 0;
     var az = 0,
-      bz = 0,
-      cz = 0,
-      dz = 0,
-      n = 0;
+    bz = 0,
+    cz = 0,
+    dz = 0,
+    n = 0;
 
     //        vv
     //       /  \
@@ -84,21 +80,21 @@ class Plane {
     dvv = Line.length2D(this.pd, this.vv);
 
     if (avh > 9900000)
-      avh = 9999999;
+    avh = 9999999;
     if (avv > 9900000)
-      avv = 9999999;
+    avv = 9999999;
     if (bvh > 9900000)
-      bvh = 9999999;
+    bvh = 9999999;
     if (bvv > 9900000)
-      bvv = 9999999;
+    bvv = 9999999;
     if (cvh > 9900000)
-      cvh = 9999999;
+    cvh = 9999999;
     if (cvv > 9900000)
-      cvv = 9999999;
+    cvv = 9999999;
     if (dvh > 9900000)
-      dvh = 9999999;
+    dvh = 9999999;
     if (dvv > 9900000)
-      dvv = 9999999;
+    dvv = 9999999;
 
     //3. Compute 1/z for each point, where 1/z at the vanishing point is 0 (in reality, it's infinity, but we'll invert these at the end)
     //determine depth
@@ -115,11 +111,11 @@ class Plane {
     //the largest z value represents the point nearest to the screen (this will get inverted at the end)
     n = az;
     if (bz > n)
-      n = bz;
+    n = bz;
     if (cz > n)
-      n = cz;
+    n = cz;
     if (dz > n)
-      n = dz;
+    n = dz;
 
     //5. Reset largest Z value to 1 (so that point is closest to the screen and will become zDepth)
     if (az == n) {}
@@ -179,7 +175,8 @@ class Plane {
 
     return this;
   };
-  static findCenterPoint(a, b, c, d) {
+
+  Plane.findCenterPoint = function(a, b, c, d) {
     //finds the center between FOUR points
     //to find the centerpoint between just TWO points (not four), then enter CenterPoint(a, b, a, b)
     var x1, x2, y1, y2;
@@ -192,13 +189,13 @@ class Plane {
       x1 = b.x;
       x2 = a.x;
     } else
-      x1 = a.x;
+    x1 = a.x;
     x2 = b.x;
     if (a.y > b.y) {
       y1 = b.y;
       y2 = a.y;
     } else
-      y1 = a.y;
+    y1 = a.y;
     y2 = b.y;
     ab.x = x1 + (x2 - x1) / 2;
     ab.y = y1 + (y2 - y1) / 2;
@@ -208,13 +205,13 @@ class Plane {
       x1 = d.x;
       x2 = c.x;
     } else
-      x1 = c.x;
+    x1 = c.x;
     x2 = d.x;
     if (c.y > d.y) {
       y1 = d.y;
       y2 = c.y;
     } else
-      y1 = c.y;
+    y1 = c.y;
     y2 = d.y;
     cd.x = x1 + (x2 - x1) / 2;
     cd.y = y1 + (y2 - y1) / 2;
@@ -224,13 +221,13 @@ class Plane {
       x1 = cd.x;
       x2 = ab.x;
     } else
-      x1 = ab.x;
+    x1 = ab.x;
     x2 = cd.x;
     if (ab.y > cd.y) {
       y1 = cd.y;
       y2 = ab.y;
     } else
-      y1 = ab.y;
+    y1 = ab.y;
     y2 = cd.y;
 
     var ret = new Point2D(0, 0);
@@ -239,7 +236,7 @@ class Plane {
     return ret;
   }
 
-  static interpolateTrianglePerspective(x1, y1, z1, uv1, x2, y2, z2, uv2, x3, y3, z3, uv3, px, py) {
+  Plane.interpolateTrianglePerspective = function(x1, y1, z1, uv1, x2, y2, z2, uv2, x3, y3, z3, uv3, px, py) {
     var px1, py1, px2, py2, px3, py3, xP, yP, zP;
 
     //Perspective (hyperbolic) triangle interpolation ------------------------------------
@@ -276,7 +273,7 @@ class Plane {
     //5. Linearly interpolate the value of the projected point in the projected triangle (perspective correction)
     return Plane.interpolateTriangleLinear(px1, py1, uv1, px2, py2, uv2, px3, py3, uv3, xP, yP);
   };
-  static interpolateTriangleLinear(x1, y1, uv1, x2, y2, uv2, x3, y3, uv3, px, py) {
+  Plane.interpolateTriangleLinear = function(x1, y1, uv1, x2, y2, uv2, x3, y3, uv3, px, py) {
 
     var d, u, v, w;
 
@@ -297,7 +294,7 @@ class Plane {
   };
 
 
-  screenToUV(px, py) {
+  this.screenToUV = function(px, py) {
     var u = Plane.interpolateTrianglePerspective(
       this.pa.x, this.pa.y, this.a.z, 0,
       this.pb.x, this.pb.y, this.b.z, 0,
@@ -309,7 +306,7 @@ class Plane {
     return new Point2D(u, v);
   };
 
-  uvToScreen(pu, pv) {
+  this.uvToScreen = function(pu, pv) {
     var z = Plane.interpolateTriangleLinear(
       0, 0, this.a.z,
       0, this.uvHeight, this.b.z,
@@ -324,10 +321,13 @@ class Plane {
       0, 0, this.pa.y * this.a.z,
       0, this.uvHeight, this.pb.y * this.b.z,
       this.uvWidth, this.uvHeight, this.pc.y * this.c.z, pu, pv) / z;
-    // this is a hack to fix negative z value cases causing wrong projected points 
+
+    // this is a hack to fix negative z value cases causing wrong projected points
     if (z < 0) {
       return errorNegativeZ;
     }
     return new Point2D(px, py);
   };
+
+  this.computeZforProjectedPlane();
 }
