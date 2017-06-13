@@ -129,16 +129,18 @@ for (let from = 0; from < circles.length; from++) {
     var vanishingPoint;
     var otherLine1;
     var otherLine2;
+    var movementPoint;
 
     var edgeDragStart = function (x, y) {
       otherLine1 = new Line(getCenter(from), getCenter(from + 3));
       otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
       vanishingPoint = new Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Line(getCenter(from + 2), getCenter(from + 3)));
+      movementPoint = new Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Point2D(x, y));
       path.attr('stroke', '#f00');
     }
 
     var edgeDragMove = function (dx, dy, x, y) {
-      var line = new Line(vanishingPoint, new Point2D(x, y));
+      var line = new Line(vanishingPoint, new Point2D(movementPoint.x + dx, movementPoint.y + dy));
       var newPoint1 = otherLine1.findIntersectWithLine(line);
       var newPoint2 = otherLine2.findIntersectWithLine(line);
       getCenter(from).setTo(newPoint1);

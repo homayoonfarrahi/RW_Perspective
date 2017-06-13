@@ -56,6 +56,26 @@ class Line {
       return points;
     }
 
+    closestPointTo(givenPoint) {
+      var dx = this.p2.x - this.p1.x;
+      var dy = this.p2.y - this.p1.y;
+
+      if (dy === 0) {
+          return new Point2D(givenPoint.x, p1.y);
+      }
+
+      if (dx === 0) {
+          return new Point2D(p1.x, givenPoint.y)
+      }
+
+      var slope = dy / dx;
+      var perpendicularSlope = -1 / slope;
+      var perpendicularLine = new Line(givenPoint, givenPoint.clone().add(new Point2D(1, perpendicularSlope)));
+      var closestPoint = this.findIntersectWithLine(perpendicularLine);
+
+      return closestPoint;
+    }
+
     static findIntersect(a, b, c, d) {
         //finds intersection between line a-b and line c-d
         var a1 = 0,
