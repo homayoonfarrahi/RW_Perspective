@@ -59,6 +59,28 @@ var updateFillerPath = function updateFillerPath() {
   fillerPath.attr('opacity', 0.4);
 };
 
+var toRadians = function(degree) {
+  return degree * (Math.PI / 180);
+};
+
+var getCursorStyleForSlope = function(slope) {
+  if (slope === undefined) {
+    return 'ns-resize';
+  }
+
+  var slopeRadian = Math.atan(slope);
+  if (slopeRadian >= toRadians(-90) && slopeRadian < toRadians(-67.5)
+      || slopeRadian >= toRadians(67.5) && slopeRadian <= toRadians(90)) {
+    return 'ns-resize';
+  } else if (slopeRadian >= toRadians(-67.5) && slopeRadian < toRadians(-22.5)) {
+    return 'nesw-resize';
+  } else if (slopeRadian >= toRadians(-22.5) && slopeRadian < toRadians(22.5)) {
+    return 'ew-resize';
+  } else if (slopeRadian >= toRadians(22.5) && slopeRadian < toRadians(67.5)) {
+    return 'nwse-resize';
+  }
+};
+
 var paper = Raphael(0, 0, 1120, 840);
 var backgroundSet = paper.set();
 var nonInteractableSet = paper.set();
@@ -142,6 +164,13 @@ for (var from = 0; from < circles.length; from++) {
       otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
       vanishingPoint = new Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Line(getCenter(from + 2), getCenter(from + 3)));
       movementPoint = new Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Point2D(x, y));
+
+      // finding the slope of bisector to display the appropriate cursor direction
+      var direction1 = getCenter(from + 3).clone().subtract(getCenter(from)).normalize();
+      var direction2 = getCenter(from + 2).clone().subtract(getCenter(from + 1)).normalize();
+      var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
+      var angleBisectorLine = new Line(new Point2D(0, 0), angleBisectorDirection.clone());
+      document.body.style.cursor = getCursorStyleForSlope(angleBisectorLine.getSlope());
       path.attr('stroke', '#f00');
     }
 
@@ -160,6 +189,7 @@ for (var from = 0; from < circles.length; from++) {
 
     var edgeDragEnd = function (event) {
       path.attr('stroke', '#00f');
+      document.body.style.cursor = 'default';
     }
 
     path.drag(edgeDragMove, edgeDragStart, edgeDragEnd);

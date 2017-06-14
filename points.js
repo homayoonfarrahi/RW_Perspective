@@ -51,6 +51,11 @@ function Point2D(x, y) {
     this.x = p.x;
     this.y = p.y;
   }
+
+  this.normalize = function() {
+    var length = Math.sqrt((this.x * this.x) + (this.y * this.y));
+    return this.divideBy(length);
+  }
 }
 
 function Point3D(x, y, z) {

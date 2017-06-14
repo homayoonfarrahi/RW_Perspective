@@ -37,7 +37,7 @@ function Line(p1, p2) {
 
     return (givenY - yIntercept) / slope;
   }
-  
+
   this.findIntersectWithLine = function(line) {
     return Line.findIntersect(this.p1, this.p2, line.p1, line.p2);
   }
@@ -71,6 +71,17 @@ function Line(p1, p2) {
     var closestPoint = this.findIntersectWithLine(perpendicularLine);
 
     return closestPoint;
+  }
+
+  this.getSlope = function() {
+    var dx = this.p2.x - this.p1.x;
+    var dy = this.p2.y - this.p1.y;
+
+    if (dx === 0) {
+      return undefined;
+    }
+
+    return dy / dx;
   }
 
   Line.findIntersect = function(a, b, c, d) {

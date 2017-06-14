@@ -141,6 +141,8 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     narrowPath.attr('stroke', '#fff');
     widePath.attr('stroke-width', 3);
     narrowPath.attr('stroke-width', 1);
+    widePath.attr('stroke-opacity', 0.5);
+    narrowPath.attr('stroke-opacity', 0.7);
 
     widePath.show();
     narrowPath.show();
