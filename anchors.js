@@ -1,3 +1,4 @@
+
 function AnchorSystem(boundaries, perspectiveTool, paper) {
   this.anchorLines = [];
   this.boundaries = boundaries;
@@ -7,6 +8,10 @@ function AnchorSystem(boundaries, perspectiveTool, paper) {
   this.maxY = boundaries[3];
   this.perspectiveTool = perspectiveTool;
   this.paper = paper;
+
+  setCursor = function (cursor) {
+    setTimeout("document.body.style.cursor = '" + cursor + "'", 0);
+  }
 
   this.addAnchorLine = function (circle1, circle2) {
     var anchorLine = new AnchorLine(circle1, circle2, this);
@@ -238,16 +243,16 @@ function AnchorPoint(point, circle, anchorLine) {
   var hoverIn = function () {
     var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
     if (movementDirection === 'horizontal') {
-      document.body.style.cursor = 'ew-resize';
+      setCursor('ew-resize');
     } else if (movementDirection === 'vertical') {
-      document.body.style.cursor = 'ns-resize';
+      setCursor('ns-resize');
     }
     this.handle.attr('fill', '#f00');
   }
 
   var hoverOut = function () {
-    document.body.style.cursor = 'default';
-    if(!dragging){
+    setCursor('auto');
+    if (!dragging) {
       this.handle.attr('fill', '#00f');
     }
   }
@@ -270,10 +275,12 @@ function AnchorPoint(point, circle, anchorLine) {
     this.associatedCircle.circle.attr('cy', intersect.y);
 
     var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
-    if (movementDirection === 'horizontal') {
-      document.body.style.cursor = 'ew-resize';
-    } else if (movementDirection === 'vertical') {
-      document.body.style.cursor = 'ns-resize';
+
+    if (movementDirection == 'horizontal') {
+      setCursor('ew-resize');
+      console.log(movementDirection);
+    } else if (movementDirection == 'vertical') {
+      setCursor('ns-resize');
     }
 
     this.associatedCircle.point.x = intersect.x;
@@ -285,23 +292,23 @@ function AnchorPoint(point, circle, anchorLine) {
   var dragStart = function (x, y, event) {
     dragging = true;
     initialHandlePos = new Point2D(this.handle.attr('cx'), this.handle.attr('cy'));
-    
+
     var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
-      if (movementDirection === 'horizontal') {
-        document.body.style.cursor = 'ew-resize';
-      } else if (movementDirection === 'vertical') {
-        document.body.style.cursor = 'ns-resize';
-      }
+    if (movementDirection === 'horizontal') {
+      setCursor('ew-resize');
+    } else if (movementDirection === 'vertical') {
+      setCursor('ns-resize');
+    }
   };
 
   var dragEnds = function (event) {
     this.handle.attr('fill', '#00f');
-    document.body.style.cursor = 'default';
+    setCursor('auto');
     dragging = false;
   };
 
   this.handle.hover(hoverIn.bind(this), hoverOut.bind(this));
-  
+
   this.handle.drag(drag.bind(this), dragStart.bind(this), dragEnds.bind(this));
 
   this.setPaperInstance = function (paper) {
