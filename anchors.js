@@ -258,7 +258,7 @@ function AnchorPoint(point, circle, anchorLine) {
     function (event) {
       this.handle.attr('fill', '#00f');
       document.body.style.cursor = 'default';
-    }.bind(this),
+    }.bind(this)
   );
   anchorHandleSet.push(this.handle);
 
