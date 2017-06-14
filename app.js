@@ -17,14 +17,14 @@ function PerspectiveTool() {
 
   var anchorSystem;
   var grid;
-
+  
   var screenSpaceMovement = false;
-  document.onkeydown = function(e) {
+  document.onkeydown = function (e) {
     if (e.key === 'Alt') {
       screenSpaceMovement = true;
     }
   }
-  document.onkeyup = function(e) {
+  document.onkeyup = function (e) {
     if (e.key === 'Alt') {
       screenSpaceMovement = false;
     }
@@ -163,12 +163,12 @@ function PerspectiveTool() {
 
         var circleHoverIn = function () {
           circle.attr('fill', '#f00');
-          document.body.style.cursor = 'move';
+          setCursor('move');
         }
 
         var circleHoverOut = function () {
           circle.attr('fill', '#00f');
-          document.body.style.cursor = 'default';
+          setCursor('default');
         }
 
         circle.drag(circleDragMove, circleDragStart, circleDragEnd);
@@ -228,7 +228,7 @@ function PerspectiveTool() {
         var edgeDragEnd = function (event) {
           dragging = false;
           path.attr('stroke', '#00f');
-          document.body.style.cursor = 'default';
+          setCursor('auto');
         }
 
         var edgeHoverIn = function () {
@@ -237,12 +237,12 @@ function PerspectiveTool() {
           var direction2 = getCenter(from + 2).clone().subtract(getCenter(from + 1)).normalize();
           var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
           var angleBisectorLine = new Line(new Point2D(0, 0), angleBisectorDirection.clone());
-          document.body.style.cursor = getCursorStyleForSlope(angleBisectorLine.getSlope());
+          setCursor(getCursorStyleForSlope(angleBisectorLine.getSlope()));
           path.attr('stroke', '#f00');
         }
 
         var edgeHoverOut = function () {
-          document.body.style.cursor = 'default';
+          setCursor('auto');
           if (!dragging) {
             path.attr('stroke', '#00f');
           }
@@ -330,12 +330,12 @@ function PerspectiveTool() {
     }
 
     var hoverIn = function () {
-      document.body.style.cursor = 'move';
+      setCursor('move');
     }
 
 
     var hoverOut = function () {
-      document.body.style.cursor = 'default';
+      setCursor('default');
     }
 
     var pathString = getClosedPathString();
