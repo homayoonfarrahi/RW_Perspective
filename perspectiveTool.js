@@ -231,8 +231,6 @@ function PerspectiveTool() {
 
         var edgeDragEnd = function (event) {
           dragging = false;
-          path.attr('stroke', '#00f');
-          setCursor('auto');
         }
 
         var edgeHoverIn = function () {
