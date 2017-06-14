@@ -130,8 +130,8 @@ function PerspectiveTool() {
     anchorHandleSet = paper.set();
 
 
-    var image = paper.image("outdoor.jpg", 0, 0, 1120, 840);
-    backgroundSet.push(image);
+    // var image = paper.image("outdoor.jpg", 0, 0, 1120, 840);
+    // backgroundSet.push(image);
 
     centers = [pa, pb, pc, pd];
     for (var i = 0; i < 4; i++) {
@@ -361,7 +361,7 @@ function PerspectiveTool() {
     grid = new Grid(centers[0], centers[1], centers[2], centers[3], this.widthFeet, this.heightFeet, paper);
 
 
-    nonInteractableSet.insertAfter(backgroundSet);
+    // nonInteractableSet.insertAfter(backgroundSet);
     fillerSet.insertAfter(nonInteractableSet);
     planeEdgeSet.insertAfter(fillerSet);
     planeVertexSet.insertAfter(planeEdgeSet);
