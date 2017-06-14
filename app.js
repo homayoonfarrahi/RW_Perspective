@@ -74,18 +74,18 @@ function PerspectiveTool() {
     fillerPath.attr('opacity', 0.4);
   };
 
-  var toRadians = function(degree) {
+  var toRadians = function (degree) {
     return degree * (Math.PI / 180);
   };
 
-  var getCursorStyleForSlope = function(slope) {
+  var getCursorStyleForSlope = function (slope) {
     if (slope === undefined) {
       return 'ns-resize';
     }
 
     var slopeRadian = Math.atan(slope);
     if (slopeRadian >= toRadians(-90) && slopeRadian < toRadians(-67.5)
-        || slopeRadian >= toRadians(67.5) && slopeRadian <= toRadians(90)) {
+      || slopeRadian >= toRadians(67.5) && slopeRadian <= toRadians(90)) {
       return 'ns-resize';
     } else if (slopeRadian >= toRadians(-67.5) && slopeRadian < toRadians(-22.5)) {
       return 'nesw-resize';
@@ -96,12 +96,12 @@ function PerspectiveTool() {
     }
   };
 
-  this.setDimensions = function(wf, hf) {
+  this.setDimensions = function (wf, hf) {
     this.widthFeet = wf;
     this.heightFeet = hf;
   }
 
-  this.init = function(widthFeet, heightFeet) {
+  this.init = function (widthFeet, heightFeet) {
     this.widthFeet = widthFeet;
     this.heightFeet = heightFeet;
 
@@ -127,7 +127,7 @@ function PerspectiveTool() {
       (function (i, circle) {
         var initialCirclePos = undefined;
 
-        var circleDragMove = function(dx, dy, x, y, event) {
+        var circleDragMove = function (dx, dy, x, y, event) {
           var i = 0;
           for (i = 0; i < circles.length; i++) {
             if (circles[i].circle === circle) break;
@@ -141,17 +141,26 @@ function PerspectiveTool() {
         }
 
         var circleDragStart = function (x, y, event) {
-          circle.attr('fill', '#f00');
-          document.body.style.cursor = 'move';
+
           initialCirclePos = new Point2D(circle.attr('cx'), circle.attr('cy'));
         }
 
         var circleDragEnd = function (event) {
+
+        }
+
+        var circleHoverIn = function () {
+          circle.attr('fill', '#f00');
+          document.body.style.cursor = 'move';
+        }
+
+        var circleHoverOut = function () {
           circle.attr('fill', '#00f');
           document.body.style.cursor = 'default';
         }
 
         circle.drag(circleDragMove, circleDragStart, circleDragEnd);
+        circle.hover(circleHoverIn, circleHoverOut);
       })(i, circle);
       planeVertexSet.push(circle);
 
@@ -180,20 +189,15 @@ function PerspectiveTool() {
         var otherLine1;
         var otherLine2;
         var movementPoint;
-
+        var dragging = false;
         var edgeDragStart = function (x, y) {
+          dragging = true;
           otherLine1 = new Line(getCenter(from), getCenter(from + 3));
           otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
           vanishingPoint = new Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Line(getCenter(from + 2), getCenter(from + 3)));
           movementPoint = new Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Point2D(x, y));
 
-          // finding the slope of bisector to display the appropriate cursor direction
-          var direction1 = getCenter(from + 3).clone().subtract(getCenter(from)).normalize();
-          var direction2 = getCenter(from + 2).clone().subtract(getCenter(from + 1)).normalize();
-          var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
-          var angleBisectorLine = new Line(new Point2D(0, 0), angleBisectorDirection.clone());
-          document.body.style.cursor = getCursorStyleForSlope(angleBisectorLine.getSlope());
-          path.attr('stroke', '#f00');
+
         }
 
         var edgeDragMove = function (dx, dy, x, y) {
@@ -210,10 +214,29 @@ function PerspectiveTool() {
         }
 
         var edgeDragEnd = function (event) {
+          dragging = false;
           path.attr('stroke', '#00f');
           document.body.style.cursor = 'default';
         }
 
+        var edgeHoverIn = function () {
+          // finding the slope of bisector to display the appropriate cursor direction
+          var direction1 = getCenter(from + 3).clone().subtract(getCenter(from)).normalize();
+          var direction2 = getCenter(from + 2).clone().subtract(getCenter(from + 1)).normalize();
+          var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
+          var angleBisectorLine = new Line(new Point2D(0, 0), angleBisectorDirection.clone());
+          document.body.style.cursor = getCursorStyleForSlope(angleBisectorLine.getSlope());
+          path.attr('stroke', '#f00');
+        }
+
+        var edgeHoverOut = function () {
+          document.body.style.cursor = 'default';
+          if (!dragging) {
+            path.attr('stroke', '#00f');
+          }
+        }
+
+        path.hover(edgeHoverIn, edgeHoverOut);
         path.drag(edgeDragMove, edgeDragStart, edgeDragEnd);
       })(from, path);
 
@@ -247,11 +270,11 @@ function PerspectiveTool() {
       uv = plane.screenToUV(x, y);
       lastU = uv.x;
       lastV = uv.y;
-      document.body.style.cursor = 'move';
+
     }
 
     var end = function () {
-      document.body.style.cursor = 'default';
+
     }
 
     var move = function (dx, dy, x, y) {
@@ -280,6 +303,15 @@ function PerspectiveTool() {
       grid.update();
     }
 
+    var hoverIn = function () {
+      document.body.style.cursor = 'move';
+    }
+
+
+    var hoverOut = function () {
+      document.body.style.cursor = 'default';
+    }
+
     var pathString = getClosedPathString();
     fillerPath = paper.path(pathString);
     fillerPath.attr('fill', '#fff');
@@ -287,6 +319,7 @@ function PerspectiveTool() {
     fillerPath.attr('opacity', 0.4);
     fillerPath.attr('stroke-opacity', 0.4);
     fillerPath.drag(move, start, end);
+    fillerPath.hover(hoverIn, hoverOut);
     fillerSet.push(fillerPath);
 
     anchorSystem = new AnchorSystem([0, 1120, 0, 840], this, paper);
@@ -307,7 +340,7 @@ function PerspectiveTool() {
     anchorHandleSet.insertAfter(planeVertexSet);
   }
 
-  this.update = function() {
+  this.update = function () {
     updateCircles();
     updatePaths();
     updateFillerPath();
