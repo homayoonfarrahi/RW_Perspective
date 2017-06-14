@@ -1,14 +1,15 @@
-function AnchorSystem(boundaries) {
+function AnchorSystem(boundaries, perspectiveTool, paper) {
   this.anchorLines = [];
   this.boundaries = boundaries;
   this.minX = boundaries[0];
   this.maxX = boundaries[1];
   this.minY = boundaries[2];
   this.maxY = boundaries[3];
+  this.perspectiveTool = perspectiveTool;
+  this.paper = paper;
 
   this.addAnchorLine = function(circle1, circle2) {
     var anchorLine = new AnchorLine(circle1, circle2, this);
-    anchorLine.setPaperInstance(this.paper);
     this.anchorLines.push(anchorLine);
   }
 
@@ -52,6 +53,18 @@ function AnchorSystem(boundaries) {
     }
   }
 
+  this.addAnchorHandlesToSet = function(set) {
+    for (var i = 0 ; i < this.anchorLines.length ; i++) {
+      this.anchorLines[i].addAnchorHandlesToSet(set);
+    }
+  }
+
+  this.addAnchorLinesToSet = function(set) {
+    for (var i = 0 ; i < this.anchorLines.length ; i++) {
+      this.anchorLines[i].addAnchorLinesToSet(set);
+    }
+  }
+
   this.update = function() {
     for (var i=0 ; i<this.anchorLines.length ; i++) {
       this.anchorLines[i].update();
@@ -70,6 +83,8 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.path2narrow = null;
   this.middlePath = null;
   this.anchorSystem = anchorSystem;
+  this.perspectiveTool = anchorSystem.perspectiveTool;
+  this.paper = anchorSystem.paper;
 
   this.computeAnchorPositions = function() {
     var anchors = [];
@@ -148,6 +163,19 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     narrowPath.show();
   }
 
+  this.addAnchorHandlesToSet = function(set) {
+    this.anchorPoint1.addAnchorHandlesToSet(set);
+    this.anchorPoint2.addAnchorHandlesToSet(set);
+  }
+
+  this.addAnchorLinesToSet = function(set) {
+    set.push(this.path1wide);
+    set.push(this.path1narrow);
+    set.push(this.path2wide);
+    set.push(this.path2narrow);
+    set.push(this.middlePath);
+  }
+
   this.update = function() {
     var p1 = new Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
     var p2 = new Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
@@ -185,19 +213,12 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   // just initialize the anchorPoints, they will be positioned correctly in the update right after
   this.anchorPoint1 = new AnchorPoint(new Point2D(0, 0), this.circle1, this);
   this.anchorPoint2 = new AnchorPoint(new Point2D(0, 0), this.circle2, this);
-  this.anchorPoint1.setPaperInstance(this.paper);
-  this.anchorPoint2.setPaperInstance(this.paper);
 
-  this.path1wide = paper.path('M0,0L0,0');
-  this.path1narrow = paper.path('M0,0L0,0');
-  this.path2wide = paper.path('M0,0L0,0');
-  this.path2narrow = paper.path('M0,0L0,0');
-  this.middlePath = paper.path('M0,0L0,0');
-  nonInteractableSet.push(this.path1wide);
-  nonInteractableSet.push(this.path1narrow);
-  nonInteractableSet.push(this.path2wide);
-  nonInteractableSet.push(this.path2narrow);
-  nonInteractableSet.push(this.middlePath);
+  this.path1wide = this.paper.path('M0,0L0,0');
+  this.path1narrow = this.paper.path('M0,0L0,0');
+  this.path2wide = this.paper.path('M0,0L0,0');
+  this.path2narrow = this.paper.path('M0,0L0,0');
+  this.middlePath = this.paper.path('M0,0L0,0');
 
   this.update();
 }
@@ -206,8 +227,10 @@ function AnchorPoint(point, circle, anchorLine) {
   this.associatedCircle = circle;
   this.position = point;
   this.anchorLine = anchorLine;
+  this.perspectiveTool = anchorLine.perspectiveTool;
+  this.paper = anchorLine.paper;
 
-  this.handle = paper.circle(this.position.x, this.position.y, 10);
+  this.handle = this.paper.circle(this.position.x, this.position.y, 10);
 
   this.handle.attr('fill', '#00f');
   this.handle.attr('opacity', 0.5);
@@ -240,9 +263,7 @@ function AnchorPoint(point, circle, anchorLine) {
       this.associatedCircle.point.x = intersect.x;
       this.associatedCircle.point.y = intersect.y;
       this.anchorLine.anchorSystem.update();
-      updatePaths();
-      updateFillerPath();
-      grid.update();
+      this.perspectiveTool.update();
     }.bind(this),
     function (x, y, event) {
       this.handle.attr('fill', '#f00');
@@ -258,9 +279,8 @@ function AnchorPoint(point, circle, anchorLine) {
     function (event) {
       this.handle.attr('fill', '#00f');
       document.body.style.cursor = 'default';
-    }.bind(this),
+    }.bind(this)
   );
-  anchorHandleSet.push(this.handle);
 
   this.setPaperInstance = function(paper) {
     this.paper = paper;
@@ -270,6 +290,10 @@ function AnchorPoint(point, circle, anchorLine) {
     this.position.setTo(pos);
     this.handle.attr('cx', this.position.x);
     this.handle.attr('cy', this.position.y);
+  }
+
+  this.addAnchorHandlesToSet = function(set) {
+    set.push(this.handle);
   }
 
   this.update = function() {
