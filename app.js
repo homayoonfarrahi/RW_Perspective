@@ -18,14 +18,18 @@ function PerspectiveTool() {
   var anchorSystem;
   var grid;
 
+  var divOffsetX = document.getElementById('perspectiveTool').offsetLeft;
+  var divOffsetY = document.getElementById('perspectiveTool').offsetTop;
+  var divOffset = new Point2D(divOffsetX, divOffsetY);
+
   var screenSpaceMovement = false;
   document.onkeydown = function(e) {
-    if (e.key === 'Alt') {
+    if (e.key === 'Control') {
       screenSpaceMovement = true;
     }
   }
   document.onkeyup = function(e) {
-    if (e.key === 'Alt') {
+    if (e.key === 'Control') {
       screenSpaceMovement = false;
     }
   }
@@ -207,7 +211,7 @@ function PerspectiveTool() {
           otherLine1 = new Line(getCenter(from), getCenter(from + 3));
           otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
           vanishingPoint = new Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Line(getCenter(from + 2), getCenter(from + 3)));
-          movementPoint = new Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Point2D(x, y));
+          movementPoint = new Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Point2D(x - divOffset.x, y - divOffset.y));
 
 
         }
@@ -280,7 +284,7 @@ function PerspectiveTool() {
     var lastMousePos;
     var start = function (x, y) {
       plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
-      uv = plane.screenToUV(x, y);
+      uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
       lastU = uv.x;
       lastV = uv.y;
       lastMousePos = new Point2D(x, y);
@@ -292,8 +296,7 @@ function PerspectiveTool() {
 
     var move = function (dx, dy, x, y) {
       if (!screenSpaceMovement) {
-        plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
-        uv = plane.screenToUV(x, y);
+        uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
 
         var offsetU = uv.x - lastU;
         var offsetV = uv.y - lastV;
@@ -311,14 +314,13 @@ function PerspectiveTool() {
         centers[1].setTo(tmpPB);
         centers[2].setTo(tmpPC);
         centers[3].setTo(tmpPD);
-
-        // lastPolygonScreenPos = [centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone()];
       } else {
         var screenMovement = new Point2D(x - lastMousePos.x, y - lastMousePos.y);
         centers[0].add(screenMovement);
         centers[1].add(screenMovement);
         centers[2].add(screenMovement);
         centers[3].add(screenMovement);
+        plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
       }
 
       updateCircles();
@@ -364,6 +366,10 @@ function PerspectiveTool() {
     planeEdgeSet.insertAfter(fillerSet);
     planeVertexSet.insertAfter(planeEdgeSet);
     anchorHandleSet.insertAfter(planeVertexSet);
+  }
+
+  this.getPoints = function() {
+    return [pa.clone(), pb.clone(), pc.clone(), pd.clone()];
   }
 
   this.update = function () {
