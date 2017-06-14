@@ -18,6 +18,18 @@ function PerspectiveTool() {
   var anchorSystem;
   var grid;
 
+  var screenSpaceMovement = false;
+  document.onkeydown = function(e) {
+    if (e.key === 'Alt') {
+      screenSpaceMovement = true;
+    }
+  }
+  document.onkeyup = function(e) {
+    if (e.key === 'Alt') {
+      screenSpaceMovement = false;
+    }
+  }
+
   var getPathString = function getPathString(circle1, circle2) {
     var startX = circle1.circle.attr('cx');
     var startY = circle1.circle.attr('cy');
@@ -242,11 +254,13 @@ function PerspectiveTool() {
         (Math.abs(a.x - c.x) < 10 || Math.abs(a.y - c.y) < 10);
     }
 
+    var lastMousePos;
     var start = function (x, y) {
       plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
       uv = plane.screenToUV(x, y);
       lastU = uv.x;
       lastV = uv.y;
+      lastMousePos = new Point2D(x, y);
       document.body.style.cursor = 'move';
     }
 
@@ -255,29 +269,42 @@ function PerspectiveTool() {
     }
 
     var move = function (dx, dy, x, y) {
-      uv = plane.screenToUV(x, y);
+      if (!screenSpaceMovement) {
+        plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
+        uv = plane.screenToUV(x, y);
 
-      var offsetU = uv.x - lastU;
-      var offsetV = uv.y - lastV;
-      // Convert back to screen space
-      var tmpPA = plane.uvToScreen(offsetU, offsetV);
-      var tmpPB = plane.uvToScreen(offsetU, offsetV + plane.uvHeight);
-      var tmpPC = plane.uvToScreen(offsetU + plane.uvWidth, offsetV + plane.uvHeight);
-      var tmpPD = plane.uvToScreen(offsetU + plane.uvWidth, offsetV);
+        var offsetU = uv.x - lastU;
+        var offsetV = uv.y - lastV;
+        // Convert back to screen space
+        var tmpPA = plane.uvToScreen(offsetU, offsetV);
+        var tmpPB = plane.uvToScreen(offsetU, offsetV + plane.uvHeight);
+        var tmpPC = plane.uvToScreen(offsetU + plane.uvWidth, offsetV + plane.uvHeight);
+        var tmpPD = plane.uvToScreen(offsetU + plane.uvWidth, offsetV);
 
-      if (perspectivePointsAreInvalid(tmpPA, tmpPB, tmpPC, tmpPD)) {
-        return;
+        if (perspectivePointsAreInvalid(tmpPA, tmpPB, tmpPC, tmpPD)) {
+          return;
+        }
+
+        centers[0].setTo(tmpPA);
+        centers[1].setTo(tmpPB);
+        centers[2].setTo(tmpPC);
+        centers[3].setTo(tmpPD);
+
+        // lastPolygonScreenPos = [centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone()];
+      } else {
+        var screenMovement = new Point2D(x - lastMousePos.x, y - lastMousePos.y);
+        centers[0].add(screenMovement);
+        centers[1].add(screenMovement);
+        centers[2].add(screenMovement);
+        centers[3].add(screenMovement);
       }
-
-      centers[0].setTo(tmpPA);
-      centers[1].setTo(tmpPB);
-      centers[2].setTo(tmpPC);
-      centers[3].setTo(tmpPD);
+      
       updateCircles();
       updatePaths();
       updateFillerPath();
       anchorSystem.update();
       grid.update();
+      lastMousePos.setTo(new Point2D(x, y));
     }
 
     var pathString = getClosedPathString();
