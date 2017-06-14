@@ -30,13 +30,14 @@ function Grid(a, b, c, d, abFeet, bcFeet, paper) {
 
       var path = this.paper.path(pathString);
       pathSet.push(path);
+      path.toBack();
     }
   }
 
   this.removePaths = function(pathSet) {
-    pathSet.forEach(function(path) {
-      path.remove();
-    });
+    for (var i = 0 ; i < pathSet.length ; i++) {
+      pathSet[i].remove();
+    }
     pathSet.clear();
   }
 

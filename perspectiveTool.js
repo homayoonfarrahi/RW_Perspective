@@ -22,6 +22,10 @@ function PerspectiveTool() {
   var divOffsetY = document.getElementById('perspectiveTool').offsetTop;
   var divOffset = new Point2D(divOffsetX, divOffsetY);
 
+  var divSizeX = document.getElementById('perspectiveTool').offsetWidth;
+  var divSizeY = document.getElementById('perspectiveTool').offsetHeight;
+  var divSize = new Point2D(divSizeX, divSizeY);
+
   var screenSpaceMovement = false;
   document.onkeydown = function(e) {
     if (e.key === 'Control') {
@@ -121,7 +125,7 @@ function PerspectiveTool() {
     this.widthFeet = widthFeet;
     this.heightFeet = heightFeet;
 
-    paper = Raphael(document.getElementById('perspectiveTool'), 1120, 840);
+    paper = Raphael(document.getElementById('perspectiveTool'), divSize.x, divSize.y);
     backgroundSet = paper.set();
     nonInteractableSet = paper.set();
     fillerSet = paper.set();
@@ -130,7 +134,7 @@ function PerspectiveTool() {
     anchorHandleSet = paper.set();
 
 
-    // var image = paper.image("outdoor.jpg", 0, 0, 1120, 840);
+    // var image = paper.image("outdoor.jpg", 0, 0, divSize.x, divSize.y);
     // backgroundSet.push(image);
 
     centers = [pa, pb, pc, pd];
@@ -350,7 +354,7 @@ function PerspectiveTool() {
     fillerPath.hover(hoverIn, hoverOut);
     fillerSet.push(fillerPath);
 
-    anchorSystem = new AnchorSystem([0, 1120, 0, 840], this, paper);
+    anchorSystem = new AnchorSystem([0, divSize.x, 0, divSize.y], this, paper);
     anchorSystem.addAnchorLine(circles[0], circles[1]);
     anchorSystem.addAnchorLine(circles[1], circles[2]);
     anchorSystem.addAnchorLine(circles[2], circles[3]);
