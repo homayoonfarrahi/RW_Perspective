@@ -1,7 +1,8 @@
 
-function AnchorSystem(boundaries, perspectiveTool, paper) {
+function AnchorSystem(boundaries, circles, perspectiveTool, paper) {
   this.anchorLines = [];
   this.boundaries = boundaries;
+  this.circles = circles;
   this.minX = boundaries[0];
   this.maxX = boundaries[1];
   this.minY = boundaries[2];
@@ -70,11 +71,48 @@ function AnchorSystem(boundaries, perspectiveTool, paper) {
     }
   }
 
+  this.isCirclePositionInvalid = function(circle, newPos) {
+    var i = 0;
+    for (i = 0 ; i < circles.length ; i++) {
+      if (circles[i] === circle) {
+        break;
+      }
+    }
+
+    var positions = [circles[0].point, circles[1].point, circles[2].point, circles[3].point];
+    positions[i] = newPos;
+
+    var crossProductZs = [];
+    for (var index = 0; index < positions.length; index++) {
+      var prevIndex = (index + positions.length - 1) % positions.length;
+      var nextIndex = (index + 1) % positions.length;
+
+      var vec1 = positions[prevIndex].clone().subtract(positions[index]);
+      var vec2 = positions[nextIndex].clone().subtract(positions[index]);
+
+      var crossProductZ = (vec1.x * vec2.y) - (vec1.y * vec2.x);
+      crossProductZs.push(crossProductZ);
+    }
+
+    for (var i = 0 ; i < crossProductZs.length - 1 ; i++) {
+      if (crossProductZs[i] * crossProductZs[i + 1] < 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   this.update = function () {
     for (var i = 0; i < this.anchorLines.length; i++) {
       this.anchorLines[i].update();
     }
   }
+
+  this.addAnchorLine(circles[0], circles[1]);
+  this.addAnchorLine(circles[1], circles[2]);
+  this.addAnchorLine(circles[2], circles[3]);
+  this.addAnchorLine(circles[3], circles[0]);
 }
 
 function AnchorLine(circle1, circle2, anchorSystem) {
@@ -271,16 +309,17 @@ function AnchorPoint(point, circle, anchorLine) {
     var p1 = initialHandlePos.clone().add(new Point2D(dx, dy));
     var p2 = new Point2D(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
     var intersect = new Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
-    this.associatedCircle.circle.attr('cx', intersect.x);
-    this.associatedCircle.circle.attr('cy', intersect.y);
 
     var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
 
     if (movementDirection == 'horizontal') {
       setCursor('ew-resize');
-      console.log(movementDirection);
     } else if (movementDirection == 'vertical') {
       setCursor('ns-resize');
+    }
+
+    if (this.anchorLine.anchorSystem.isCirclePositionInvalid(this.associatedCircle, intersect.clone())) {
+      return;
     }
 
     this.associatedCircle.point.x = intersect.x;

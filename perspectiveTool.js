@@ -116,6 +116,34 @@ function PerspectiveTool() {
     }
   };
 
+  function isPolygonConcave(positions) {
+    var crossProductZs = [];
+    for (var index = 0; index < positions.length; index++) {
+      var prevIndex = (index + positions.length - 1) % positions.length;
+      var nextIndex = (index + 1) % positions.length;
+
+      var vec1 = positions[prevIndex].clone().subtract(positions[index]);
+      var vec2 = positions[nextIndex].clone().subtract(positions[index]);
+
+      var crossProductZ = (vec1.x * vec2.y) - (vec1.y * vec2.x);
+      crossProductZs.push(crossProductZ);
+    }
+
+    for (var i = 0 ; i < crossProductZs.length - 1 ; i++) {
+      if (crossProductZs[i] * crossProductZs[i + 1] < 0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function perspectivePointsAreInvalid(a, b, c, d) {
+    errorNegativeZ = 'error negative z';
+    return (a == errorNegativeZ || b == errorNegativeZ || c == errorNegativeZ || d == errorNegativeZ) ||
+      (Math.abs(a.x - c.x) < 10 || Math.abs(a.y - c.y) < 10);
+  }
+
   this.setDimensions = function (wf, hf) {
     this.widthFeet = wf;
     this.heightFeet = hf;
@@ -152,7 +180,15 @@ function PerspectiveTool() {
           for (i = 0; i < circles.length; i++) {
             if (circles[i].circle === circle) break;
           }
-          circles[i].point.setTo(initialCirclePos.clone().add(new Point2D(dx, dy)));
+
+          var newPos = initialCirclePos.clone().add(new Point2D(dx, dy));
+          var tmpPositions = [pa, pb, pc, pd];
+          tmpPositions[i] = newPos;
+          if (isPolygonConcave(tmpPositions)) {
+            return;
+          }
+
+          circles[i].point.setTo(newPos);
           updateCircles();
           updatePathsForCircle(circle);
           updateFillerPath();
@@ -161,7 +197,6 @@ function PerspectiveTool() {
         }
 
         var circleDragStart = function (x, y, event) {
-
           initialCirclePos = new Point2D(circle.attr('cx'), circle.attr('cy'));
         }
 
@@ -224,6 +259,14 @@ function PerspectiveTool() {
           var line = new Line(vanishingPoint, new Point2D(movementPoint.x + dx, movementPoint.y + dy));
           var newPoint1 = otherLine1.findIntersectWithLine(line);
           var newPoint2 = otherLine2.findIntersectWithLine(line);
+
+          var tmpPositions = [pa, pb, pc, pd];
+          tmpPositions[from] = newPoint1;
+          tmpPositions[(from + 1) % tmpPositions.length] = newPoint2;
+          if (isPolygonConcave(tmpPositions)) {
+            return;
+          }
+
           getCenter(from).setTo(newPoint1);
           getCenter(from + 1).setTo(newPoint2);
           updateCircles();
@@ -275,12 +318,6 @@ function PerspectiveTool() {
       circles[to].path2 = pathObj;
 
       paths.push(pathObj);
-    }
-    errorNegativeZ = 'error negative z';
-
-    function perspectivePointsAreInvalid(a, b, c, d) {
-      return (a == errorNegativeZ || b == errorNegativeZ || c == errorNegativeZ || d == errorNegativeZ) ||
-        (Math.abs(a.x - c.x) < 10 || Math.abs(a.y - c.y) < 10);
     }
 
     var lastMousePos;
@@ -352,11 +389,7 @@ function PerspectiveTool() {
     fillerPath.hover(hoverIn, hoverOut);
     fillerSet.push(fillerPath);
 
-    anchorSystem = new AnchorSystem([0, divSize.x, 0, divSize.y], this, paper);
-    anchorSystem.addAnchorLine(circles[0], circles[1]);
-    anchorSystem.addAnchorLine(circles[1], circles[2]);
-    anchorSystem.addAnchorLine(circles[2], circles[3]);
-    anchorSystem.addAnchorLine(circles[3], circles[0]);
+    anchorSystem = new AnchorSystem([0, divSize.x, 0, divSize.y], circles, this, paper);
     anchorSystem.addAnchorHandlesToSet(anchorHandleSet);
     anchorSystem.addAnchorLinesToSet(nonInteractableSet);
 
