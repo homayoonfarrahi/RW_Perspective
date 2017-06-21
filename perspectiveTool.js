@@ -90,8 +90,8 @@ function PerspectiveTool() {
   var updateFillerPath = function updateFillerPath() {
     var pathString = getClosedPathString();
     fillerPath.attr('path', pathString);
-    fillerPath.attr('fill', '#fff');
-    fillerPath.attr('opacity', 0.4);
+    fillerPath.attr('fill', PerspectiveToolSettings.fillerPath.fill);
+    fillerPath.attr('opacity', PerspectiveToolSettings.fillerPath.opacity);
   };
 
   var toRadians = function (degree) {
@@ -170,8 +170,8 @@ function PerspectiveTool() {
     for (var i = 0; i < 4; i++) {
       var radius = 7;
       var circle = paper.circle(centers[i].x, centers[i].y, radius);
-      circle.attr('fill', '#00f');
-      circle.attr('opacity', 0.5);
+      circle.attr('fill', PerspectiveToolSettings.planeVertex.fillIdle);
+      circle.attr('opacity', PerspectiveToolSettings.planeVertex.opacity);
 
       (function (i, circle) {
         var initialCirclePos = undefined;
@@ -206,12 +206,12 @@ function PerspectiveTool() {
         }
 
         var circleHoverIn = function () {
-          circle.attr('fill', '#f00');
+          circle.attr('fill', PerspectiveToolSettings.planeVertex.fillHoverIn);
           setCursor('move');
         }
 
         var circleHoverOut = function () {
-          circle.attr('fill', '#00f');
+          circle.attr('fill', PerspectiveToolSettings.planeVertex.fillIdle);
           setCursor('default');
         }
 
@@ -252,8 +252,6 @@ function PerspectiveTool() {
           otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
           vanishingPoint = new Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Line(getCenter(from + 2), getCenter(from + 3)));
           movementPoint = new Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Point2D(x - divOffset.x, y - divOffset.y));
-
-
         }
 
         var edgeDragMove = function (dx, dy, x, y) {
@@ -279,6 +277,7 @@ function PerspectiveTool() {
 
         var edgeDragEnd = function (event) {
           dragging = false;
+          path.attr('stroke', PerspectiveToolSettings.planeEdge.stroke);
         }
 
         var edgeHoverIn = function () {
@@ -288,13 +287,13 @@ function PerspectiveTool() {
           var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
           var angleBisectorLine = new Line(new Point2D(0, 0), angleBisectorDirection.clone());
           setCursor(getCursorStyleForSlope(angleBisectorLine.getSlope()));
-          path.attr('stroke', '#f00');
+          path.attr('stroke', PerspectiveToolSettings.planeEdge.strokeHoverIn);
         }
 
         var edgeHoverOut = function () {
           setCursor('auto');
           if (!dragging) {
-            path.attr('stroke', '#00f');
+            path.attr('stroke', PerspectiveToolSettings.planeEdge.stroke);
           }
         }
 
@@ -302,10 +301,10 @@ function PerspectiveTool() {
         path.drag(edgeDragMove, edgeDragStart, edgeDragEnd);
       })(from, path);
 
-      path.attr('stroke', '#00f');
-      path.attr('stroke-width', 7);
-      path.attr('stroke-opacity', 0.3);
-      path.attr('stroke-linecap', 'round');
+      path.attr('stroke', PerspectiveToolSettings.planeEdge.stroke);
+      path.attr('stroke-width', PerspectiveToolSettings.planeEdge.strokeWidth);
+      path.attr('stroke-opacity', PerspectiveToolSettings.planeEdge.strokeOpacity);
+      path.attr('stroke-linecap', PerspectiveToolSettings.planeEdge.strokeLinecap);
 
       planeEdgeSet.push(path);
 
@@ -382,10 +381,10 @@ function PerspectiveTool() {
 
     var pathString = getClosedPathString();
     fillerPath = paper.path(pathString);
-    fillerPath.attr('fill', '#fff');
-    fillerPath.attr('stroke', '#fff');
-    fillerPath.attr('opacity', 0.4);
-    fillerPath.attr('stroke-opacity', 0.4);
+    fillerPath.attr('fill', PerspectiveToolSettings.fillerPath.fill);
+    fillerPath.attr('stroke', PerspectiveToolSettings.fillerPath.stroke);
+    fillerPath.attr('opacity', PerspectiveToolSettings.fillerPath.opacity);
+    fillerPath.attr('stroke-opacity', PerspectiveToolSettings.fillerPath.strokeOpacity);
     fillerPath.drag(move, start, end);
     fillerPath.hover(hoverIn, hoverOut);
     fillerSet.push(fillerPath);

@@ -195,13 +195,6 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     widePath.attr('path', pathString);
     narrowPath.attr('path', pathString);
 
-    widePath.attr('stroke', '#000');
-    narrowPath.attr('stroke', '#fff');
-    widePath.attr('stroke-width', 3);
-    narrowPath.attr('stroke-width', 1);
-    widePath.attr('stroke-opacity', 0.5);
-    narrowPath.attr('stroke-opacity', 0.7);
-
     widePath.show();
     narrowPath.show();
   }
@@ -253,6 +246,24 @@ function AnchorLine(circle1, circle2, anchorSystem) {
     this.anchorPoint2.update();
   }
 
+  this.initPathStyles = function() {
+    this.path1wide.attr('stroke', PerspectiveToolSettings.anchorLine.widePath.stroke);
+    this.path1narrow.attr('stroke', PerspectiveToolSettings.anchorLine.narrowPath.stroke);
+    this.path2wide.attr('stroke', PerspectiveToolSettings.anchorLine.widePath.stroke);
+    this.path2narrow.attr('stroke', PerspectiveToolSettings.anchorLine.narrowPath.stroke);
+    this.middlePath.attr('stroke', PerspectiveToolSettings.anchorLine.middlePath.stroke);
+    this.path1wide.attr('stroke-width', PerspectiveToolSettings.anchorLine.widePath.strokeWidth);
+    this.path1narrow.attr('stroke-width', PerspectiveToolSettings.anchorLine.narrowPath.strokeWidth);
+    this.path2wide.attr('stroke-width', PerspectiveToolSettings.anchorLine.widePath.strokeWidth);
+    this.path2narrow.attr('stroke-width', PerspectiveToolSettings.anchorLine.narrowPath.strokeWidth);
+    this.middlePath.attr('stroke-width', PerspectiveToolSettings.anchorLine.middlePath.strokeWidth);
+    this.path1wide.attr('stroke-opacity', PerspectiveToolSettings.anchorLine.widePath.strokeOpacity);
+    this.path1narrow.attr('stroke-opacity', PerspectiveToolSettings.anchorLine.narrowPath.strokeOpacity);
+    this.path2wide.attr('stroke-opacity', PerspectiveToolSettings.anchorLine.widePath.strokeOpacity);
+    this.path2narrow.attr('stroke-opacity', PerspectiveToolSettings.anchorLine.narrowPath.strokeOpacity);
+    this.middlePath.attr('stroke-opacity', PerspectiveToolSettings.anchorLine.middlePath.strokeOpacity);
+  }
+
   // just initialize the anchorPoints, they will be positioned correctly in the update right after
   this.anchorPoint1 = new AnchorPoint(new Point2D(0, 0), this.circle1, this);
   this.anchorPoint2 = new AnchorPoint(new Point2D(0, 0), this.circle2, this);
@@ -262,6 +273,7 @@ function AnchorLine(circle1, circle2, anchorSystem) {
   this.path2wide = this.paper.path('M0,0L0,0');
   this.path2narrow = this.paper.path('M0,0L0,0');
   this.middlePath = this.paper.path('M0,0L0,0');
+  this.initPathStyles();
 
   this.update();
 }
@@ -274,8 +286,8 @@ function AnchorPoint(point, circle, anchorLine) {
   this.paper = anchorLine.paper;
 
   this.handle = this.paper.circle(this.position.x, this.position.y, 10);
-  this.handle.attr('fill', '#00f');
-  this.handle.attr('opacity', 0.5);
+  this.handle.attr('fill', PerspectiveToolSettings.anchorLine.handle.fillIdle);
+  this.handle.attr('opacity', PerspectiveToolSettings.anchorLine.handle.opacity);
   var initialHandlePos = undefined;
   var dragging = false;
   var hoverIn = function () {
@@ -285,13 +297,13 @@ function AnchorPoint(point, circle, anchorLine) {
     } else if (movementDirection === 'vertical') {
       setCursor('ns-resize');
     }
-    this.handle.attr('fill', '#f00');
+    this.handle.attr('fill', PerspectiveToolSettings.anchorLine.handle.fillHoverIn);
   }
 
   var hoverOut = function () {
     setCursor('auto');
     if (!dragging) {
-      this.handle.attr('fill', '#00f');
+      this.handle.attr('fill', PerspectiveToolSettings.anchorLine.handle.fillIdle);
     }
   }
 
@@ -341,7 +353,7 @@ function AnchorPoint(point, circle, anchorLine) {
   };
 
   var dragEnds = function (event) {
-    this.handle.attr('fill', '#00f');
+    this.handle.attr('fill', PerspectiveToolSettings.anchorLine.handle.fillIdle);
     setCursor('auto');
     dragging = false;
   };
