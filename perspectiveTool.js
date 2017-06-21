@@ -147,6 +147,7 @@ function PerspectiveTool() {
   this.setDimensions = function (wf, hf) {
     this.widthFeet = wf;
     this.heightFeet = hf;
+    grid.setDimensions(wf, hf);
   }
 
   this.init = function (widthFeet, heightFeet) {

@@ -55,5 +55,11 @@ function Grid(a, b, c, d, abFeet, bcFeet, paper) {
     this.makeGridLines(new Line(aUV, dUV), new Line(bUV, cUV), this.bcFeet, this.verticalPaths);
   }
 
+  this.setDimensions = function(wf, hf) {
+    this.abFeet = wf;
+    this.bcFeet = hf;
+    this.update();
+  }
+
   this.update();
 }
