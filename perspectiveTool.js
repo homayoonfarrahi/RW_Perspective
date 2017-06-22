@@ -141,7 +141,7 @@ function PerspectiveTool() {
   function perspectivePointsAreInvalid(a, b, c, d) {
     errorNegativeZ = 'error negative z';
     return (a == errorNegativeZ || b == errorNegativeZ || c == errorNegativeZ || d == errorNegativeZ) ||
-      (Math.abs(a.x - c.x) < 10 || Math.abs(a.y - c.y) < 10);
+      (Math.abs(a.x - c.x) < 5 || Math.abs(a.y - c.y) < 5);
   }
 
   this.setDimensions = function (wf, hf) {
