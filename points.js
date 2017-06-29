@@ -50,6 +50,7 @@ function Point2D(x, y) {
   this.setTo = function(p) {
     this.x = p.x;
     this.y = p.y;
+    return this;
   }
 
   this.normalize = function() {

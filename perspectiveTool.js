@@ -405,15 +405,24 @@ function PerspectiveTool() {
     anchorHandleSet.insertAfter(planeVertexSet);
   }
 
-  function ToOriginalSize(point,scale,offset){
+  function ToOriginalSize(point, scale, offset) {
     return point.clone().divideBy(scale).subtract(offset);
   }
 
   this.getPoints = function () {
-    return [ToOriginalSize(pa,this.scale,this.offset), 
-            ToOriginalSize(pb,this.scale,this.offset),
-            ToOriginalSize(pc,this.scale,this.offset),
-            ToOriginalSize(pd,this.scale,this.offset)];
+    return [ToOriginalSize(pa, this.scale, this.offset),
+    ToOriginalSize(pb, this.scale, this.offset),
+    ToOriginalSize(pc, this.scale, this.offset),
+    ToOriginalSize(pd, this.scale, this.offset)];
+  }
+
+
+  this.setPoints = function (p1, p2, p3, p4) {
+    pa.setTo(p1).add(this.offset).multiplyBy(this.scale);
+    pb.setTo(p2).add(this.offset).multiplyBy(this.scale)
+    pc.setTo(p3).add(this.offset).multiplyBy(this.scale)
+    pd.setTo(p4).add(this.offset).multiplyBy(this.scale)
+    this.update();
   }
 
   this.scale = 1;
@@ -426,9 +435,9 @@ function PerspectiveTool() {
     this.update();
   }
 
-  this.offset = new Point2D(0,0);
+  this.offset = new Point2D(0, 0);
   this.translate = function (offset) {
-    this.offset.add({x:offset.x/this.scale}, {x:offset.y/this.scale});
+    this.offset.add({ x: offset.x / this.scale ,y: offset.y / this.scale });
     for (var i = 0; i < centers.length; i++) {
       centers[i].add(offset);
     }
