@@ -27,12 +27,12 @@ function PerspectiveTool() {
   var divSize = new Point2D(divSizeX, divSizeY);
 
   var screenSpaceMovement = false;
-  document.onkeydown = function(e) {
+  document.onkeydown = function (e) {
     if (e.key === 'Control') {
       screenSpaceMovement = true;
     }
   }
-  document.onkeyup = function(e) {
+  document.onkeyup = function (e) {
     if (e.key === 'Control') {
       screenSpaceMovement = false;
     }
@@ -129,7 +129,7 @@ function PerspectiveTool() {
       crossProductZs.push(crossProductZ);
     }
 
-    for (var i = 0 ; i < crossProductZs.length - 1 ; i++) {
+    for (var i = 0; i < crossProductZs.length - 1; i++) {
       if (crossProductZs[i] * crossProductZs[i + 1] < 0) {
         return true;
       }
@@ -355,7 +355,7 @@ function PerspectiveTool() {
         centers[3].setTo(tmpPD);
       } else {
         var screenMovement = new Point2D(x - lastMousePos.x, y - lastMousePos.y);
-        
+
         centers[0].add(screenMovement);
         centers[1].add(screenMovement);
         centers[2].add(screenMovement);
@@ -405,26 +405,35 @@ function PerspectiveTool() {
     anchorHandleSet.insertAfter(planeVertexSet);
   }
 
-  this.getPoints = function() {
-    return [pa.clone(), pb.clone(), pc.clone(), pd.clone()];
+  function ToOriginalSize(point,scale,offset){
+    return point.clone().divideBy(scale).subtract(offset);
+  }
+
+  this.getPoints = function () {
+    return [ToOriginalSize(pa,this.scale,this.offset), 
+            ToOriginalSize(pb,this.scale,this.offset),
+            ToOriginalSize(pc,this.scale,this.offset),
+            ToOriginalSize(pd,this.scale,this.offset)];
   }
 
   this.scale = 1;
-  this.setScale = function (scale){
+  this.setScale = function (scale) {
 
     for (var i = 0; i < centers.length; i++) {
-      centers[i].multiplyBy(scale/this.scale);
+      centers[i].multiplyBy(scale / this.scale);
     }
     this.scale = scale;
     this.update();
-  } 
+  }
 
-  this.translate = function (offset){
+  this.offset = new Point2D(0,0);
+  this.translate = function (offset) {
+    this.offset.add({x:offset.x/this.scale}, {x:offset.y/this.scale});
     for (var i = 0; i < centers.length; i++) {
       centers[i].add(offset);
     }
     this.update();
-  } 
+  }
 
   this.update = function () {
     updateCircles();
