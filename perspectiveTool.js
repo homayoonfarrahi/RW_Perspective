@@ -355,10 +355,12 @@ function PerspectiveTool() {
         centers[3].setTo(tmpPD);
       } else {
         var screenMovement = new Point2D(x - lastMousePos.x, y - lastMousePos.y);
+        
         centers[0].add(screenMovement);
         centers[1].add(screenMovement);
         centers[2].add(screenMovement);
         centers[3].add(screenMovement);
+
         plane = new Plane(centers[0].clone(), centers[1].clone(), centers[2].clone(), centers[3].clone(), 300, 300);
       }
 
@@ -405,7 +407,22 @@ function PerspectiveTool() {
 
   this.getPoints = function() {
     return [pa.clone(), pb.clone(), pc.clone(), pd.clone()];
+
   }
+  
+  this.scale = function (scale){
+    for (var i = 0; i < centers.length; i++) {
+      centers[i].multiplyBy(scale);
+    }
+    this.update();
+  } 
+
+  this.translate = function (offset){
+    for (var i = 0; i < centers.length; i++) {
+      centers[i].add(offset);
+    }
+    this.update();
+  } 
 
   this.update = function () {
     updateCircles();
