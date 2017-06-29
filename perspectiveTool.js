@@ -407,13 +407,15 @@ function PerspectiveTool() {
 
   this.getPoints = function() {
     return [pa.clone(), pb.clone(), pc.clone(), pd.clone()];
-
   }
-  
-  this.scale = function (scale){
+
+  this.scale = 1;
+  this.setScale = function (scale){
+
     for (var i = 0; i < centers.length; i++) {
-      centers[i].multiplyBy(scale);
+      centers[i].multiplyBy(scale/this.scale);
     }
+    this.scale = scale;
     this.update();
   } 
 
