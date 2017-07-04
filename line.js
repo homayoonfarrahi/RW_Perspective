@@ -84,6 +84,29 @@ function Line(p1, p2) {
     return dy / dx;
   }
 
+  this.getAngle = function() {
+    var slope = this.getSlope();
+    if (slope === undefined) {
+      return 90;
+    }
+
+    return Math.atan(slope) * (180.0 / Math.PI);
+  }
+
+  this.getPerpendicularDirection = function() {
+    var slope = this.getSlope();
+    if (slope === undefined) {
+      return new Point2D(-1, 0);
+    }
+
+    if (slope === 0) {
+      return new Point2D(0, 1);
+    }
+
+    var perpendicularSlope = -1 / slope;
+    
+  }
+
   Line.findIntersect = function(a, b, c, d) {
     //finds intersection between line a-b and line c-d
     var a1 = 0,

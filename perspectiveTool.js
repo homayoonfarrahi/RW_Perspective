@@ -17,6 +17,7 @@ function PerspectiveTool() {
 
   var anchorSystem;
   var grid;
+  var measurementsUI;
 
   var divOffsetX = document.getElementById('perspectiveTool').offsetLeft;
   var divOffsetY = document.getElementById('perspectiveTool').offsetTop;
@@ -148,6 +149,7 @@ function PerspectiveTool() {
     this.widthFeet = wf;
     this.heightFeet = hf;
     grid.setDimensions(wf, hf);
+    measurementsUI.update(centers);
   }
 
   this.init = function (widthFeet, heightFeet) {
@@ -195,6 +197,7 @@ function PerspectiveTool() {
           updateFillerPath();
           anchorSystem.update();
           grid.update();
+          measurementsUI.update(centers);
         }
 
         var circleDragStart = function (x, y, event) {
@@ -273,6 +276,7 @@ function PerspectiveTool() {
           updateFillerPath();
           anchorSystem.update();
           grid.update();
+          measurementsUI.update(centers);
         }
 
         var edgeDragEnd = function (event) {
@@ -369,6 +373,7 @@ function PerspectiveTool() {
       updateFillerPath();
       anchorSystem.update();
       grid.update();
+      measurementsUI.update(centers);
       lastMousePos.setTo(new Point2D(x, y));
     }
 
@@ -390,6 +395,9 @@ function PerspectiveTool() {
     fillerPath.drag(move, start, end);
     fillerPath.hover(hoverIn, hoverOut);
     fillerSet.push(fillerPath);
+
+    // setup measurmentsUI to show textual measurements
+    measurementsUI = new MeasurementsUI(centers, this, paper);
 
     anchorSystem = new AnchorSystem([0, divSize.x, 0, divSize.y], circles, this, paper);
     anchorSystem.addAnchorHandlesToSet(anchorHandleSet);
@@ -450,5 +458,6 @@ function PerspectiveTool() {
     updateFillerPath();
     anchorSystem.update();
     grid.update();
+    measurementsUI.update(centers);
   }
 }
