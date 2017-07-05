@@ -368,8 +368,7 @@ function AnchorPoint(point, circle, anchorLine) {
 
   this.setPosition = function (pos) {
     this.position.setTo(pos);
-    this.handle.attr('cx', this.position.x);
-    this.handle.attr('cy', this.position.y);
+    this.handle.transform('t' + this.position.x + ',' + this.position.y);
   }
 
   this.addAnchorHandlesToSet = function (set) {

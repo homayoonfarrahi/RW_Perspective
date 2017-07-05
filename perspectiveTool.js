@@ -91,8 +91,6 @@ function PerspectiveTool() {
   var updateFillerPath = function updateFillerPath() {
     var pathString = getClosedPathString();
     fillerPath.attr('path', pathString);
-    fillerPath.attr('fill', PerspectiveToolSettings.fillerPath.fill);
-    fillerPath.attr('opacity', PerspectiveToolSettings.fillerPath.opacity);
   };
 
   var toRadians = function (degree) {
@@ -149,7 +147,7 @@ function PerspectiveTool() {
     this.widthFeet = wf;
     this.heightFeet = hf;
     grid.setDimensions(wf, hf);
-    measurementsUI.update(centers);
+    measurementsUI.updateDimensions();
   }
 
   this.init = function (widthFeet, heightFeet) {
