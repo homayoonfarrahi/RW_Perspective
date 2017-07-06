@@ -505,48 +505,6 @@
             grid.update();
             measurementsUI.update(this.centers);
         }
-
-        this.show = function() {
-            for (var i = 0; i < circles.length; i++) {
-                circles[i].circle.show();
-                circles[i].path1.path.show();
-                circles[i].path2.path.show();
-            }
-
-            // paths
-            for (var i = 0; i < paths.length; i++) {
-                paths[i].path.show();
-                paths[i].circle1.circle.show();
-                paths[i].circle2.circle.show();
-                paths[i].circle1.path1.path.show();
-                paths[i].circle2.path1.path.show();
-            }
-
-            fillerPath.show();
-            anchorSystem.show();
-            grid.show();
-        }
-
-        this.hide = function() {
-            for (var i = 0; i < circles.length; i++) {
-                circles[i].circle.hide();
-                circles[i].path1.path.hide();
-                circles[i].path2.path.hide();
-            }
-
-            // paths
-            for (var i = 0; i < paths.length; i++) {
-                paths[i].path.hide();
-                paths[i].circle1.circle.hide();
-                paths[i].circle2.circle.hide();
-                paths[i].circle1.path1.path.hide();
-                paths[i].circle2.path1.path.hide();
-            }
-
-            fillerPath.hide();
-            anchorSystem.hide();
-            grid.hide();
-        }
     }
 
 
@@ -564,18 +522,6 @@
         setCursor = function(cursor) {
             //setTimeout("document.body.style.cursor = '" + cursor + "'", 0);
             Renoworks.PerspectiveTool.getPaper().canvas.style.cursor = cursor;
-        }
-
-        this.hide = function() {
-            for (var i = 0; i < this.anchorLines.length; i++) {
-                this.anchorLines[i].hide();
-            }
-        }
-
-        this.show = function() {
-            for (var i = 0; i < this.anchorLines.length; i++) {
-                this.anchorLines[i].show();
-            }
         }
 
         this.addAnchorLine = function(circle1, circle2) {
@@ -828,26 +774,6 @@
             this.middlePath.attr('stroke-opacity', PerspectiveToolSettings.anchorLine.middlePath.strokeOpacity);
         }
 
-        this.hide = function() {
-            this.path1wide.hide();
-            this.path1narrow.hide();
-            this.path2wide.hide();
-            this.path2narrow.hide();
-            this.middlePath.hide();
-            this.anchorPoint1.handle.hide();
-            this.anchorPoint2.handle.hide();
-        }
-
-        this.show = function() {
-            this.path1wide.show();
-            this.path1narrow.show();
-            this.path2wide.show();
-            this.path2narrow.show();
-            this.middlePath.show();
-            this.anchorPoint1.handle.show();
-            this.anchorPoint2.handle.show();
-        }
-
         // just initialize the anchorPoints, they will be positioned correctly in the update right after
         this.anchorPoint1 = new AnchorPoint(new Point2D(0, 0), this.circle1, this);
         this.anchorPoint2 = new AnchorPoint(new Point2D(0, 0), this.circle2, this);
@@ -1030,26 +956,6 @@
             this.abFeet = wf;
             this.bcFeet = hf;
             this.update();
-        }
-
-        this.show = function() {
-            for (var i = 0; i < this.verticalPaths.length; i++) {
-                this.verticalPaths[i].show();
-            }
-
-            for (var i = 0; i < this.horizontalPaths.length; i++) {
-                this.horizontalPaths[i].show();
-            }
-        }
-
-        this.hide = function() {
-            for (var i = 0; i < this.verticalPaths.length; i++) {
-                this.verticalPaths[i].hide();
-            }
-
-            for (var i = 0; i < this.horizontalPaths.length; i++) {
-                this.horizontalPaths[i].hide();
-            }
         }
 
         this.update();
