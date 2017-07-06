@@ -228,11 +228,12 @@
                     }
 
                     var circleDragStart = function(x, y, event) {
+                        isDragging = true;
                         initialCirclePos = new Point2D(circle.attr('cx'), circle.attr('cy'));
                     }
 
                     var circleDragEnd = function(event) {
-
+                        isDragging = false;
                     }
 
                     var circleHoverIn = function() {
@@ -278,6 +279,7 @@
                     var movementPoint;
                     var dragging = false;
                     var edgeDragStart = function(x, y) {
+                        isDragging = true;
                         dragging = true;
                         otherLine1 = new Line(getCenter(from), getCenter(from + 3));
                         otherLine2 = new Line(getCenter(from + 1), getCenter(from + 2));
@@ -309,12 +311,12 @@
                         updateFillerPath();
                         anchorSystem.update();
                         grid.update();
-                        console.log(this, self)
                         measurementsUI.update(self.centers);
                     }
 
                     var edgeDragEnd = function(event) {
                         dragging = false;
+                        isDragging = false;
                         path.attr('stroke', PerspectiveToolSettings.planeEdge.stroke);
                     }
 
@@ -360,6 +362,7 @@
 
             var lastMousePos;
             var start = function(x, y) {
+                isDragging = true;
                 plane = new Plane(self.centers[0].clone(), self.centers[1].clone(), self.centers[2].clone(), self.centers[3].clone(), 300, 300);
                 uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
                 lastU = uv.x;
@@ -368,7 +371,7 @@
             }
 
             var end = function() {
-
+                isDragging = false;
             }
 
             var move = function(dx, dy, x, y) {
@@ -431,7 +434,6 @@
             fillerSet.push(fillerPath);
 
             // setup measurmentsUI to show textual measurements
-            console.log(this, self)
             measurementsUI = new MeasurementsUI(this.centers, this, paper);
 
             anchorSystem = new AnchorSystem([0, divSize.x, 0, divSize.y], circles, this, paper);
@@ -851,6 +853,7 @@
         };
 
         var dragStart = function(x, y, event) {
+            isDragging = true;
             dragging = true;
             initialHandlePos = new Point2D(this.handle.attr('cx'), this.handle.attr('cy'));
 
@@ -863,6 +866,7 @@
         };
 
         var dragEnds = function(event) {
+            isDragging = false;
             this.handle.attr('fill', PerspectiveToolSettings.anchorLine.handle.fillIdle);
             setCursor('auto');
             dragging = false;
