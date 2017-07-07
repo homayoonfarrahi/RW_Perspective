@@ -520,6 +520,7 @@ var pTool = (function(pTool) {
         }
     }
 
+    pTool._seal();
     return pTool;
 
 })(pTool || {});
