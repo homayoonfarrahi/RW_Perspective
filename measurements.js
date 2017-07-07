@@ -26,12 +26,12 @@ var pTool = (function(pTool) {
             heightLabel = paper.text(0.0, 0.0, '1.0');
             heightLabel.attr('fill', '#ff3');
             heightLabel.attr('font-size', 13);
-            heightLabel.attr('text', this.perspectiveTool.widthFeet + " '");
+            heightLabel.attr('text', getFtIn(this.perspectiveTool.heightFeet));
 
             widthLabel = paper.text(0.0, 0.0, '1.0');
             widthLabel.attr('fill', '#ff3');
             widthLabel.attr('font-size', 13);
-            widthLabel.attr('text', this.perspectiveTool.heightFeet + " '");
+            widthLabel.attr('text', getFtIn(this.perspectiveTool.widthFeet));
 
             upsideLabel = paper.text(0.0, 0.0, 'This End UP');
             upsideLabel.attr('fill', '#ff3');
@@ -65,8 +65,13 @@ var pTool = (function(pTool) {
         }
 
         this.updateDimensions = function() {
-            heightLabel.attr('text', this.perspectiveTool.widthFeet + " '");
-            widthLabel.attr('text', this.perspectiveTool.heightFeet + " '");
+            heightLabel.attr('text', getFtIn(this.perspectiveTool.heightFeet));
+            widthLabel.attr('text', getFtIn(this.perspectiveTool.widthFeet));
+        }
+
+        // Converts decimal ft to proper inches ex) 3.5 => 3'6"
+        var getFtIn = function(ft) {
+            return parseInt(ft) + '\'' + Math.round((ft % 1) * 12) + '"';
         }
 
         this.init();

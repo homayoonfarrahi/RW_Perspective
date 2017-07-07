@@ -146,6 +146,10 @@ var pTool = (function(pTool) {
                 (Math.abs(a.x - c.x) < 5 || Math.abs(a.y - c.y) < 5);
         }
 
+        this.isShowing = function() {
+            return $(paper.canvas).css('display') != 'none';
+        }
+
         this.isDragging = function() {
             return _private.isDragging;
         }
