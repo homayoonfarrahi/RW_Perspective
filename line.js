@@ -146,7 +146,7 @@ var pTool = (function(pTool) {
                 //the lines are parallel, so no intersect exists
                 //instead, create an "infinite" parallel line centerpoint for "vanishing point"
                 //a. get center point
-                cp = Plane.findCenterPoint(a, b, c, d);
+                cp = _private.Plane.findCenterPoint(a, b, c, d);
                 //b. get slope of a-b line
                 if ((b.x - a.x) == 0) {
                     //c. vertical line, slope is infinite
