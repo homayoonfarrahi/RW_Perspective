@@ -29,8 +29,8 @@ var pTool = (function(pTool) {
 
         this.computeAnchorPositions = function() {
             var anchors = [];
-            var p1 = new _private.Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-            var p2 = new _private.Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+            var p1 = new _private.Point2D(this.circle1.point.x, this.circle1.point.y);
+            var p2 = new _private.Point2D(this.circle2.point.x, this.circle2.point.y);
             if (this.anchorSystem.isInsideBoundaries(new _private.Point2D(this.anchorSystem.minX, new _private.Line(p1, p2).getYforX(this.anchorSystem.minX)))) {
                 anchors.push(new _private.Point2D(this.anchorSystem.minX, new _private.Line(p1, p2).getYforX(this.anchorSystem.minX)));
             }
@@ -81,17 +81,19 @@ var pTool = (function(pTool) {
         }
 
         this.getLine = function() {
-            var p1 = new _private.Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-            var p2 = new _private.Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+            var p1 = new _private.Point2D(this.circle1.point.x, this.circle1.point.y);
+            var p2 = new _private.Point2D(this.circle2.point.x, this.circle2.point.y);
 
             return new _private.Line(p1, p2);
         }
 
         this.setupExtendedPaths = function(widePath, narrowPath, p1, p2) {
-            var pathString = 'M' + p1.x + ',' + p1.y;
-            pathString += 'L' + p2.x + ',' + p2.y;
-            widePath.attr('path', pathString);
-            narrowPath.attr('path', pathString);
+            var direction = new _private.Line(p1.clone(), p2.clone());
+            var angle = direction.getAngle();
+            var middlePoint = p1.clone().add(p2).divideBy(2);
+            var scaleFactor = _private.Line.length2D(p1, p2);
+            widePath.transform('t' + middlePoint.x + ',' + middlePoint.y + 'r' + angle + 's' + scaleFactor);
+            narrowPath.transform('t' + middlePoint.x + ',' + middlePoint.y + 'r' + angle + 's' + scaleFactor);
 
             widePath.show();
             narrowPath.show();
@@ -111,8 +113,8 @@ var pTool = (function(pTool) {
         }
 
         this.update = function() {
-            var p1 = new _private.Point2D(this.circle1.circle.attr('cx'), this.circle1.circle.attr('cy'));
-            var p2 = new _private.Point2D(this.circle2.circle.attr('cx'), this.circle2.circle.attr('cy'));
+            var p1 = new _private.Point2D(this.circle1.point.x, this.circle1.point.y);
+            var p2 = new _private.Point2D(this.circle2.point.x, this.circle2.point.y);
             var anchors = this.computeAnchorPositions();
             if (anchors.length !== 0) {
                 var deltaP = p2.clone().subtract(p1);
@@ -128,9 +130,11 @@ var pTool = (function(pTool) {
                 this.setupExtendedPaths(this.path1wide, this.path1narrow, this.anchorPoint1.position, this.circle1.point);
                 this.setupExtendedPaths(this.path2wide, this.path2narrow, this.anchorPoint2.position, this.circle2.point);
 
-                var pathString = 'M' + this.circle1.point.x + ',' + this.circle1.point.y;
-                pathString += 'L' + this.circle2.point.x + ',' + this.circle2.point.y;
-                this.middlePath.attr('path', pathString);
+                var direction = new _private.Line(p1.clone(), p2.clone());
+                var angle = direction.getAngle();
+                var middlePoint = p1.clone().add(p2).divideBy(2);
+                var scaleFactor = _private.Line.length2D(p1, p2);
+                this.middlePath.transform('t' + middlePoint.x + ',' + middlePoint.y + 'r' + angle + 's' + scaleFactor);
                 this.middlePath.show();
             } else {
                 this.path1wide.hide();
@@ -166,11 +170,11 @@ var pTool = (function(pTool) {
         this.anchorPoint1 = new _private.AnchorPoint(new _private.Point2D(0, 0), this.circle1, this);
         this.anchorPoint2 = new _private.AnchorPoint(new _private.Point2D(0, 0), this.circle2, this);
 
-        this.path1wide = this.paper.path('M0,0L0,0');
-        this.path1narrow = this.paper.path('M0,0L0,0');
-        this.path2wide = this.paper.path('M0,0L0,0');
-        this.path2narrow = this.paper.path('M0,0L0,0');
-        this.middlePath = this.paper.path('M0,0L0,0');
+        this.path1wide = this.paper.path('M-0.5,0L0.5,0');
+        this.path1narrow = this.paper.path('M-0.5,0L0.5,0');
+        this.path2wide = this.paper.path('M-0.5,0L0.5,0');
+        this.path2narrow = this.paper.path('M-0.5,0L0.5,0');
+        this.middlePath = this.paper.path('M-0.5,0L0.5,0');
         this.initPathStyles();
 
         this.update();

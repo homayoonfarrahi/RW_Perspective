@@ -78,9 +78,7 @@ var pTool = (function(pTool) {
         var dragStart = function(x, y, event) {
             _private.isDragging = true;
             dragging = true;
-            // initialHandlePos = new _private.Point2D(this.handle.attr('cx'), this.handle.attr('cy'));
             initialHandlePos = this.position.clone();
-            console.log('hi')
 
             var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
             if (movementDirection === 'horizontal') {
