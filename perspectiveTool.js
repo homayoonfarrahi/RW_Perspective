@@ -155,11 +155,11 @@ var pTool = (function(pTool) {
         }
 
         this.hide = function() {
-            $(paper.canvas).hide();
+            $(paper.canvas).parent().hide();
         }
 
         this.show = function() {
-            $(paper.canvas).show();
+            $(paper.canvas).parent().show();
         }
 
         this.getPaper = function() {
@@ -193,6 +193,10 @@ var pTool = (function(pTool) {
                 divSize = new _private.Point2D(widthFeet, heightFeet);
 
                 paper = Raphael(element, divSize.x, divSize.y);
+
+                // Magic scaling :)
+                paper.setViewBox(0, 0, divSize.x, divSize.y);
+                paper.canvas.setAttribute('preserveAspectRatio', 'none');
             }
 
             backgroundSet = paper.set();
@@ -463,6 +467,8 @@ var pTool = (function(pTool) {
             planeEdgeSet.insertAfter(fillerSet);
             planeVertexSet.insertAfter(planeEdgeSet);
             anchorHandleSet.insertAfter(planeVertexSet);
+
+            return this;
         }
 
         function ToOriginalSize(point, scale, offset) {
@@ -489,15 +495,16 @@ var pTool = (function(pTool) {
             this.centers[1].setTo(p2).add(this.offset).multiplyBy(this.scale);
             this.centers[2].setTo(p3).add(this.offset).multiplyBy(this.scale);
             this.centers[3].setTo(p4).add(this.offset).multiplyBy(this.scale);
+
             this.update();
         }
 
         this.scale = 1;
         this.setScale = function(scale) {
-
             for (var i = 0; i < this.centers.length; i++) {
                 this.centers[i].multiplyBy(scale / this.scale);
             }
+
             this.scale = scale;
             this.update();
         }
@@ -508,9 +515,14 @@ var pTool = (function(pTool) {
                 x: offset.x / this.scale,
                 y: offset.y / this.scale
             });
+
+            console.log(offset)
             for (var i = 0; i < this.centers.length; i++) {
                 this.centers[i].add(offset);
             }
+
+            console.log(this.centers[0])
+
             this.update();
         }
 
