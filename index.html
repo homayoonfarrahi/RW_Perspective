@@ -23,12 +23,16 @@
   <script src="grid.js" type="text/javascript"></script>
   <script src="measurements.js" type="text/javascript"></script>
   <script src="perspectiveTool.js" type="text/javascript"></script>
+  <script src="perspectiveManager.js" type="text/javascript"></script>
+  <script src="snap.js" type="text/javascript"></script>
 
   <!-- <script src="perspective-tool.min.js" type="text/javascript"></script> -->
 
   <script type="text/javascript">
-      pTool.PerspectiveTool.init($('#perspectiveTool')[0], 1120, 840);
-      pTool.PerspectiveTool.setDimensions(5.5, 3.5);
+      // pTool.PerspectiveManager.init($('#perspectiveTool')[0], 1120, 840);
+      //pTool.PerspectiveTool.setDimensions(5.5, 3.5);
+
+      PerspectiveManager.init($('#perspectiveTool')[0], 1120, 840);
   </script>
 </body>
 

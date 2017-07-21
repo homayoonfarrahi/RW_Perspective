@@ -28,15 +28,15 @@ var pTool = (function(pTool) {
         var hoverIn = function() {
             var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
             if (movementDirection === 'horizontal') {
-                setCursor('ew-resize');
+                this.perspectiveTool.setCursor('ew-resize');
             } else if (movementDirection === 'vertical') {
-                setCursor('ns-resize');
+                this.perspectiveTool.setCursor('ns-resize');
             }
             this.handle.attr('fill', _private.PerspectiveToolSettings.anchorLine.handle.fillHoverIn);
-        }
+        }.bind(this);
 
         var hoverOut = function() {
-            setCursor('auto');
+            this.perspectiveTool.setCursor('auto');
             if (!dragging) {
                 this.handle.attr('fill', _private.PerspectiveToolSettings.anchorLine.handle.fillIdle);
             }
@@ -57,12 +57,14 @@ var pTool = (function(pTool) {
             var p2 = new _private.Point2D(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
             var intersect = new _private.Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
 
+            intersect = this.perspectiveTool.getSnap().suggestPosition(this.perspectiveTool, intersect, movementAnchorLine.getLine().getDirection());
+
             var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
 
             if (movementDirection == 'horizontal') {
-                setCursor('ew-resize');
+                this.perspectiveTool.setCursor('ew-resize');
             } else if (movementDirection == 'vertical') {
-                setCursor('ns-resize');
+                this.perspectiveTool.setCursor('ns-resize');
             }
 
             if (this.anchorLine.anchorSystem.isCirclePositionInvalid(this.associatedCircle, intersect.clone())) {
@@ -82,16 +84,16 @@ var pTool = (function(pTool) {
 
             var movementDirection = this.anchorLine.anchorSystem.getMovementDirection(this);
             if (movementDirection === 'horizontal') {
-                setCursor('ew-resize');
+                this.perspectiveTool.setCursor('ew-resize');
             } else if (movementDirection === 'vertical') {
-                setCursor('ns-resize');
+                this.perspectiveTool.setCursor('ns-resize');
             }
         };
 
         var dragEnds = function(event) {
             _private.isDragging = false;
             this.handle.attr('fill', _private.PerspectiveToolSettings.anchorLine.handle.fillIdle);
-            setCursor('auto');
+            this.perspectiveTool.setCursor('auto');
             dragging = false;
         };
 
@@ -119,6 +121,14 @@ var pTool = (function(pTool) {
             } else {
                 this.handle.show();
             }
+        }
+
+        this.hide = function() {
+          this.handle.hide();
+        }
+
+        this.show = function() {
+          this.handle.show();
         }
     }
 

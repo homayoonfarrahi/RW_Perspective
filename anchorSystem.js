@@ -24,11 +24,6 @@ var pTool = (function(pTool) {
         this.perspectiveTool = perspectiveTool;
         this.paper = paper;
 
-        setCursor = function(cursor) {
-            //setTimeout("document.body.style.cursor = '" + cursor + "'", 0);
-            pTool.PerspectiveTool.getPaper().canvas.style.cursor = cursor;
-        }
-
         this.addAnchorLine = function(circle1, circle2) {
             var anchorLine = new _private.AnchorLine(circle1, circle2, this);
             this.anchorLines.push(anchorLine);
@@ -122,6 +117,18 @@ var pTool = (function(pTool) {
             for (var i = 0; i < this.anchorLines.length; i++) {
                 this.anchorLines[i].update();
             }
+        }
+
+        this.hide = function() {
+          for (var i = 0; i < this.anchorLines.length; i++) {
+            this.anchorLines[i].hide();
+          }
+        }
+
+        this.show = function() {
+          for (var i = 0; i < this.anchorLines.length; i++) {
+            this.anchorLines[i].show();
+          }
         }
 
         this.addAnchorLine(circles[0], circles[1]);

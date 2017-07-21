@@ -13,7 +13,7 @@ var pTool = (function(pTool) {
             pTool._unseal = _unseal;
         };
 
-    _private.Grid = function(a, b, c, d, abFeet, bcFeet, paper) {
+    _private.Grid = function(a, b, c, d, bcFeet, abFeet, paper) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -71,8 +71,8 @@ var pTool = (function(pTool) {
         }
 
         this.setDimensions = function(wf, hf) {
-            this.abFeet = wf;
-            this.bcFeet = hf;
+            this.abFeet = hf;
+            this.bcFeet = wf;
             this.update();
         }
 

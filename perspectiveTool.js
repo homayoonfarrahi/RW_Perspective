@@ -13,7 +13,7 @@ var pTool = (function(pTool) {
             pTool._unseal = _unseal;
         };
 
-    pTool.PerspectiveTool = new function() {
+    pTool.PerspectiveTool = function() {
         this.centers = [
             new _private.Point2D(256, 498),
             new _private.Point2D(255, 673),
@@ -21,6 +21,8 @@ var pTool = (function(pTool) {
             new _private.Point2D(445, 455)
         ];
 
+        var active = true;
+        pTool.PerspectiveTool.paper;
         var paper;
         var divSize;
         var divOffset;
@@ -41,6 +43,7 @@ var pTool = (function(pTool) {
         var grid;
         var plane;
         var measurementsUI;
+        var snap;
 
         var getPathString = function getPathString(circle1, circle2) {
             var startX = circle1.circle.attr('cx');
@@ -166,6 +169,10 @@ var pTool = (function(pTool) {
             return paper;
         }
 
+        this.setCursor = function(cursor) {
+          paper.canvas.style.cursor = cursor;
+        }
+
         this.setDimensions = function(wf, hf) {
             this.widthFeet = wf;
             this.heightFeet = hf;
@@ -173,27 +180,33 @@ var pTool = (function(pTool) {
             measurementsUI.updateDimensions();
         }
 
-        this.init = function(element, widthFeet, heightFeet) {
-            if (!paper) {
-                document.onkeydown = function(e) {
-                    if (e.key === 'Control') {
-                        screenSpaceMovement = true;
-                    }
+        this.init = function(element, divWidth, divHeight) {
+            document.onkeydown = function(e) {
+                if (e.key === 'Control') {
+                    screenSpaceMovement = true;
                 }
-                document.onkeyup = function(e) {
-                    if (e.key === 'Control') {
-                        screenSpaceMovement = false;
-                    }
-                }
-
-                var divOffsetX = $(element).offset().left;
-                var divOffsetY = $(element).offset().top;
-
-                divOffset = new _private.Point2D(divOffsetX, divOffsetY);
-                divSize = new _private.Point2D(widthFeet, heightFeet);
-
-                paper = Raphael(element, divSize.x, divSize.y);
             }
+            document.onkeyup = function(e) {
+                if (e.key === 'Control') {
+                    screenSpaceMovement = false;
+                }
+            }
+
+            var divOffsetX = $(element).offset().left;
+            var divOffsetY = $(element).offset().top;
+
+            divOffset = new _private.Point2D(divOffsetX, divOffsetY);
+            divSize = new _private.Point2D(divWidth, divHeight);
+
+            if (pTool.PerspectiveTool.paper === undefined) {
+                pTool.PerspectiveTool.paper = Raphael(element, divSize.x, divSize.y);
+                paper = pTool.PerspectiveTool.paper;
+
+                // Magic scaling :)
+                paper.setViewBox(0, 0, divSize.x, divSize.y);
+                paper.canvas.setAttribute('preserveAspectRatio', 'none');
+            }
+            paper = pTool.PerspectiveTool.paper;
 
             backgroundSet = paper.set();
             nonInteractableSet = paper.set();
@@ -222,11 +235,14 @@ var pTool = (function(pTool) {
                         }
 
                         var newPos = initialCirclePos.clone().add(new _private.Point2D(dx, dy));
+
+                        newPos = snap.suggestPosition(this, newPos, null);
+
                         var tmpPositions = [
-                            self.centers[0],
-                            self.centers[1],
-                            self.centers[2],
-                            self.centers[3]
+                            this.centers[0],
+                            this.centers[1],
+                            this.centers[2],
+                            this.centers[3]
                         ];
                         tmpPositions[i] = newPos;
                         if (isPolygonConcave(tmpPositions)) {
@@ -239,13 +255,16 @@ var pTool = (function(pTool) {
                         updateFillerPath();
                         anchorSystem.update();
                         grid.update();
-                        measurementsUI.update(self.centers);
-                    }
+                        measurementsUI.update(this.centers);
+                    }.bind(this);
 
                     var circleDragStart = function(x, y, event) {
+                        if (!active) {
+                          this.activate();
+                        }
                         _private.isDragging = true;
                         initialCirclePos = new _private.Point2D(circle.attr('cx'), circle.attr('cy'));
-                    }
+                    }.bind(this);
 
                     var circleDragEnd = function(event) {
                         _private.isDragging = false;
@@ -253,17 +272,17 @@ var pTool = (function(pTool) {
 
                     var circleHoverIn = function() {
                         circle.attr('fill', _private.PerspectiveToolSettings.planeVertex.fillHoverIn);
-                        setCursor('move');
-                    }
+                        this.setCursor('move');
+                    }.bind(this);
 
                     var circleHoverOut = function() {
                         circle.attr('fill', _private.PerspectiveToolSettings.planeVertex.fillIdle);
-                        setCursor('default');
-                    }
+                        this.setCursor('default');
+                    }.bind(this);
 
                     circle.drag(circleDragMove, circleDragStart, circleDragEnd);
                     circle.hover(circleHoverIn, circleHoverOut);
-                })(i, circle);
+                }.bind(this))(i, circle);
                 planeVertexSet.push(circle);
 
                 circles.push({
@@ -294,24 +313,30 @@ var pTool = (function(pTool) {
                     var movementPoint;
                     var dragging = false;
                     var edgeDragStart = function(x, y) {
+                        if (!active) {
+                          this.activate();
+                        }
                         _private.isDragging = true;
                         dragging = true;
                         otherLine1 = new _private.Line(getCenter(from), getCenter(from + 3));
                         otherLine2 = new _private.Line(getCenter(from + 1), getCenter(from + 2));
                         vanishingPoint = new _private.Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new _private.Line(getCenter(from + 2), getCenter(from + 3)));
                         movementPoint = new _private.Line(getCenter(from), getCenter(from + 1)).closestPointTo(new _private.Point2D(x - divOffset.x, y - divOffset.y));
-                    }
+                    }.bind(this);
 
                     var edgeDragMove = function(dx, dy, x, y) {
                         var line = new _private.Line(vanishingPoint, new _private.Point2D(movementPoint.x + dx, movementPoint.y + dy));
                         var newPoint1 = otherLine1.findIntersectWithLine(line);
                         var newPoint2 = otherLine2.findIntersectWithLine(line);
 
+                        newPoint1 = snap.suggestPosition(this, newPoint1, otherLine1.getDirection());
+                        newPoint2 = snap.suggestPosition(this, newPoint2, otherLine2.getDirection());
+
                         var tmpPositions = [
-                            self.centers[0],
-                            self.centers[1],
-                            self.centers[2],
-                            self.centers[3]
+                            this.centers[0],
+                            this.centers[1],
+                            this.centers[2],
+                            this.centers[3]
                         ];
                         tmpPositions[from] = newPoint1;
                         tmpPositions[(from + 1) % tmpPositions.length] = newPoint2;
@@ -326,8 +351,8 @@ var pTool = (function(pTool) {
                         updateFillerPath();
                         anchorSystem.update();
                         grid.update();
-                        measurementsUI.update(self.centers);
-                    }
+                        measurementsUI.update(this.centers);
+                    }.bind(this);
 
                     var edgeDragEnd = function(event) {
                         dragging = false;
@@ -341,20 +366,20 @@ var pTool = (function(pTool) {
                         var direction2 = getCenter(from + 2).clone().subtract(getCenter(from + 1)).normalize();
                         var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
                         var angleBisectorLine = new _private.Line(new _private.Point2D(0, 0), angleBisectorDirection.clone());
-                        setCursor(getCursorStyleForSlope(angleBisectorLine.getSlope()));
+                        this.setCursor(getCursorStyleForSlope(angleBisectorLine.getSlope()));
                         path.attr('stroke', _private.PerspectiveToolSettings.planeEdge.strokeHoverIn);
-                    }
+                    }.bind(this);
 
                     var edgeHoverOut = function() {
-                        setCursor('auto');
+                        this.setCursor('auto');
                         if (!dragging) {
                             path.attr('stroke', _private.PerspectiveToolSettings.planeEdge.stroke);
                         }
-                    }
+                    }.bind(this);
 
                     path.hover(edgeHoverIn, edgeHoverOut);
                     path.drag(edgeDragMove, edgeDragStart, edgeDragEnd);
-                })(from, path);
+                }.bind(this))(from, path);
 
                 path.attr('stroke', _private.PerspectiveToolSettings.planeEdge.stroke);
                 path.attr('stroke-width', _private.PerspectiveToolSettings.planeEdge.strokeWidth);
@@ -377,13 +402,17 @@ var pTool = (function(pTool) {
 
             var lastMousePos;
             var start = function(x, y) {
+                if (!active) {
+                  this.activate();
+                }
+
                 _private.isDragging = true;
-                plane = new _private.Plane(self.centers[0].clone(), self.centers[1].clone(), self.centers[2].clone(), self.centers[3].clone(), 300, 300);
+                plane = new _private.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
                 uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
                 lastU = uv.x;
                 lastV = uv.y;
                 lastMousePos = new _private.Point2D(x, y);
-            }
+            }.bind(this);
 
             var end = function() {
                 _private.isDragging = false;
@@ -405,19 +434,24 @@ var pTool = (function(pTool) {
                         return;
                     }
 
-                    self.centers[0].setTo(tmpPA);
-                    self.centers[1].setTo(tmpPB);
-                    self.centers[2].setTo(tmpPC);
-                    self.centers[3].setTo(tmpPD);
+                    tmpPA = snap.suggestPosition(this, tmpPA, null);
+                    tmpPB = snap.suggestPosition(this, tmpPB, null);
+                    tmpPC = snap.suggestPosition(this, tmpPC, null);
+                    tmpPD = snap.suggestPosition(this, tmpPD, null);
+
+                    this.centers[0].setTo(tmpPA);
+                    this.centers[1].setTo(tmpPB);
+                    this.centers[2].setTo(tmpPC);
+                    this.centers[3].setTo(tmpPD);
                 } else {
                     var screenMovement = new _private.Point2D(x - lastMousePos.x, y - lastMousePos.y);
 
-                    self.centers[0].add(screenMovement);
-                    self.centers[1].add(screenMovement);
-                    self.centers[2].add(screenMovement);
-                    self.centers[3].add(screenMovement);
+                    this.centers[0].add(screenMovement);
+                    this.centers[1].add(screenMovement);
+                    this.centers[2].add(screenMovement);
+                    this.centers[3].add(screenMovement);
 
-                    plane = new _private.Plane(self.centers[0].clone(), self.centers[1].clone(), self.centers[2].clone(), self.centers[3].clone(), 300, 300);
+                    plane = new _private.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
                 }
 
                 updateCircles();
@@ -425,18 +459,18 @@ var pTool = (function(pTool) {
                 updateFillerPath();
                 anchorSystem.update();
                 grid.update();
-                measurementsUI.update(self.centers);
+                measurementsUI.update(this.centers);
                 lastMousePos.setTo(new _private.Point2D(x, y));
-            }
+            }.bind(this);
 
             var hoverIn = function() {
-                setCursor('move');
-            }
+                this.setCursor('move');
+            }.bind(this);
 
 
             var hoverOut = function() {
-                setCursor('default');
-            }
+                this.setCursor('default');
+            }.bind(this);
 
             var pathString = getClosedPathString();
             fillerPath = paper.path(pathString);
@@ -521,6 +555,24 @@ var pTool = (function(pTool) {
             anchorSystem.update();
             grid.update();
             measurementsUI.update(this.centers);
+        }
+
+        this.activate = function() {
+          anchorSystem.show();
+          active = true;
+        }
+
+        this.deactivate = function() {
+          anchorSystem.hide();
+          active = false;
+        }
+
+        this.setSnap = function(s) {
+          snap = s;
+        }
+
+        this.getSnap = function() {
+          return snap;
         }
     }
 

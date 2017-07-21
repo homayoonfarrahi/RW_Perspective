@@ -108,6 +108,16 @@ var pTool = (function(pTool) {
             return Math.atan(slope) * (180.0 / Math.PI);
         }
 
+        this.getDirection = function() {
+          var direction = new _private.Point2D(p2.x - p1.x, p2.y - p1.y);
+          var length = _private.Line.length2D(p1, p2);
+          if (direction.x === 0 && direction.y === 0) {
+            return direction;
+          }
+          
+          return direction.divideBy(length);
+        }
+
         this.getPerpendicularDirection = function() {
             var slope = this.getSlope();
             if (slope === undefined) {

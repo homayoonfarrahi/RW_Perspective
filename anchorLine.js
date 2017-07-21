@@ -166,6 +166,24 @@ var pTool = (function(pTool) {
             this.middlePath.attr('stroke-opacity', _private.PerspectiveToolSettings.anchorLine.middlePath.strokeOpacity);
         }
 
+        this.hide = function() {
+          this.anchorPoint1.hide();
+          this.anchorPoint2.hide();
+          this.path1wide.hide();
+          this.path2wide.hide();
+          this.path1narrow.hide();
+          this.path2narrow.hide();
+        }
+
+        this.show = function() {
+          this.anchorPoint1.show();
+          this.anchorPoint2.show();
+          this.path1wide.show();
+          this.path2wide.show();
+          this.path1narrow.show();
+          this.path2narrow.show();
+        }
+
         // just initialize the anchorPoints, they will be positioned correctly in the update right after
         this.anchorPoint1 = new _private.AnchorPoint(new _private.Point2D(0, 0), this.circle1, this);
         this.anchorPoint2 = new _private.AnchorPoint(new _private.Point2D(0, 0), this.circle2, this);
