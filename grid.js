@@ -57,17 +57,17 @@ var pTool = (function(pTool) {
         }
 
         this.update = function() {
-            this.plane = new _private.Plane(this.a.clone(), this.b.clone(), this.c.clone(), this.d.clone(), 300, 300);
+            this.plane = new Geometry.Plane(this.a.clone(), this.b.clone(), this.c.clone(), this.d.clone(), 300, 300);
             var aUV = this.plane.screenToUV(this.a.x, this.a.y);
             var bUV = this.plane.screenToUV(this.b.x, this.b.y);
             var cUV = this.plane.screenToUV(this.c.x, this.c.y);
             var dUV = this.plane.screenToUV(this.d.x, this.d.y);
 
             this.removePaths(this.horizontalPaths);
-            this.makeGridLines(new _private.Line(aUV, bUV), new _private.Line(dUV, cUV), this.abFeet, this.horizontalPaths);
+            this.makeGridLines(new Geometry.Line(aUV, bUV), new Geometry.Line(dUV, cUV), this.abFeet, this.horizontalPaths);
 
             this.removePaths(this.verticalPaths);
-            this.makeGridLines(new _private.Line(aUV, dUV), new _private.Line(bUV, cUV), this.bcFeet, this.verticalPaths);
+            this.makeGridLines(new Geometry.Line(aUV, dUV), new Geometry.Line(bUV, cUV), this.bcFeet, this.verticalPaths);
         }
 
         this.setDimensions = function(wf, hf) {

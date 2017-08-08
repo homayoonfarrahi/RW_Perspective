@@ -13,53 +13,53 @@ var pTool = (function(pTool) {
             pTool._unseal = _unseal;
         };
 
-    _private.PerspectiveToolSettings = new function() {
-        this.fillerPath = new function() {
-            this.fill = '#fff';
-            this.stroke = '#fff';
-            this.opacity = 0.4;
-            this.strokeOpacity = 0.4;
-        };
+    _private.PerspectiveToolSettings = {
+        fillerPath: {
+            fill: '#fff',
+            stroke: '#fff',
+            opacity: 0.4,
+            strokeOpacity: 0.4
+        },
 
-        this.planeVertex = new function() {
-            this.fillIdle = '#00f';
-            this.fillHoverIn = '#f00';
-            this.opacity = 0.5;
-        };
+        planeVertex: {
+            fillIdle: '#00f',
+            fillHoverIn: '#f00',
+            opacity: 0.5
+        },
 
-        this.planeEdge = new function() {
-            this.stroke = '#00f';
-            this.strokeHoverIn = '#f00';
-            this.strokeWidth = 7;
-            this.strokeOpacity = 0.3;
-            this.strokeLinecap = 'round';
-        };
+        planeEdge: {
+            stroke: '#00f',
+            strokeHoverIn: '#f00',
+            strokeWidth: 7,
+            strokeOpacity: 0.3,
+            strokeLinecap: 'round'
+        },
 
-        this.anchorLine = new function() {
-            this.widePath = new function() {
-                this.stroke = '#000';
-                this.strokeWidth = 3;
-                this.strokeOpacity = 0.5;
-            };
+        anchorLine: {
+            widePath: {
+                stroke: '#000',
+                strokeWidth: 3,
+                strokeOpacity: 0.5
+            },
 
-            this.narrowPath = new function() {
-                this.stroke = '#fff';
-                this.strokeWidth = 1;
-                this.strokeOpacity = 0.7;
-            };
+            narrowPath: {
+                stroke: '#fff',
+                strokeWidth: 1,
+                strokeOpacity: 0.7
+            },
 
-            this.middlePath = new function() {
-                this.stroke = '#000';
-                this.strokeWidth = 1;
-                this.strokeOpacity = 1;
-            };
+            middlePath: {
+                stroke: '#000',
+                strokeWidth: 1,
+                strokeOpacity: 1
+            },
 
-            this.handle = new function() {
-                this.fillIdle = '#00f';
-                this.fillHoverIn = '#f00';
-                this.opacity = 0.5;
-            };
-        };
+            handle: {
+                fillIdle: '#00f',
+                fillHoverIn: '#f00',
+                opacity: 0.5
+            }
+        }
     };
 
     return pTool;

@@ -14,7 +14,6 @@ PerspectiveManager = new function() {
     newPerspective.init(element, divWidth, divHeight);
     newPerspective.setDimensions(5.5, 3.5);
     snap.addPlane(newPerspective);
-    newPerspective.setSnap(snap);
     perspectives.push(newPerspective);
   }
 

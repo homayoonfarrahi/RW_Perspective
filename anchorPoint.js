@@ -53,9 +53,9 @@ var pTool = (function(pTool) {
                 }
             }
 
-            var p1 = initialHandlePos.clone().add(new _private.Point2D(dx, dy));
-            var p2 = new _private.Point2D(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
-            var intersect = new _private.Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
+            var p1 = initialHandlePos.clone().add(new Geometry.Point2D(dx, dy));
+            var p2 = new Geometry.Point2D(oppositeCircle.circle.attr('cx'), oppositeCircle.circle.attr('cy'));
+            var intersect = new Geometry.Line(p1, p2).findIntersectWithLine(movementAnchorLine.getLine());
 
             intersect = this.perspectiveTool.getSnap().suggestPosition(this.perspectiveTool, intersect, movementAnchorLine.getLine().getDirection());
 

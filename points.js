@@ -1,28 +1,28 @@
-var pTool = (function(pTool) {
+var Geometry = (function(Geometry) {
 
     // Cross-File Private State
-    var _private = pTool._private = pTool._private || {},
-        _seal = pTool._seal = pTool._seal || function() {
-            delete pTool._private;
-            delete pTool._seal;
-            delete pTool._unseal;
+    var _private = Geometry._private = Geometry._private || {},
+        _seal = Geometry._seal = Geometry._seal || function() {
+            delete Geometry._private;
+            delete Geometry._seal;
+            delete Geometry._unseal;
         },
-        _unseal = pTool._unseal = pTool._unseal || function() {
-            pTool._private = _private;
-            pTool._seal = _seal;
-            pTool._unseal = _unseal;
+        _unseal = Geometry._unseal = Geometry._unseal || function() {
+            Geometry._private = _private;
+            Geometry._seal = _seal;
+            Geometry._unseal = _unseal;
         };
 
-    _private.Point2D = function(x, y) {
+    Geometry.Point2D = function(x, y) {
         this.x = x;
         this.y = y;
 
         this.clone = function() {
-            return new _private.Point2D(this.x, this.y);
+            return new Geometry.Point2D(this.x, this.y);
         }
 
         this.clone2D = function() {
-            return new _private.Point2D(this.x, this.y);
+            return new Geometry.Point2D(this.x, this.y);
         }
 
         this.add = function(p) {
@@ -72,18 +72,22 @@ var pTool = (function(pTool) {
             var length = Math.sqrt((this.x * this.x) + (this.y * this.y));
             return this.divideBy(length);
         }
+
+        this.dotProduct = function(other) {
+          return this.x * other.x + this.y * other.y;
+        }
     }
 
-    _private.Point3D = function(x, y, z) {
+    Geometry.Point3D = function(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
 
         this.clone2D = function() {
-            return new _private.Point2D(this.x, this.y);
+            return new Geometry.Point2D(this.x, this.y);
         }
     }
 
-    return pTool;
+    return Geometry;
 
-})(pTool || {});
+})(Geometry || {});

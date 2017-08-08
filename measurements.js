@@ -40,26 +40,26 @@ var pTool = (function(pTool) {
 
         this.update = function(vertices) {
             var textPos = vertices[0].clone().add(vertices[1]).divideBy(2);
-            var slope = new _private.Line(vertices[0], vertices[1]).getSlope();
+            var slope = new Geometry.Line(vertices[0], vertices[1]).getSlope();
             var posOffset = -15;
             if (slope === undefined || slope >= 0) {
                 posOffset *= -1;
             }
-            var direction = new _private.Line(vertices[0], vertices[1]);
+            var direction = new Geometry.Line(vertices[0], vertices[1]);
             var angle = direction.getAngle();
             heightLabel.transform('t' + textPos.x + ',' + textPos.y + 'r' + angle + 't0,' + posOffset);
 
             textPos = vertices[1].clone().add(vertices[2]).divideBy(2);
-            slope = new _private.Line(vertices[1], vertices[2]).getSlope();
+            slope = new Geometry.Line(vertices[1], vertices[2]).getSlope();
             posOffset = 15;
-            direction = new _private.Line(vertices[1], vertices[2]);
+            direction = new Geometry.Line(vertices[1], vertices[2]);
             angle = direction.getAngle();
             widthLabel.transform('t' + textPos.x + ',' + textPos.y + 'r' + angle + 't0,' + posOffset);
 
             textPos = vertices[3].clone().add(vertices[0]).divideBy(2);
-            slope = new _private.Line(vertices[3], vertices[0]).getSlope();
+            slope = new Geometry.Line(vertices[3], vertices[0]).getSlope();
             posOffset = -15;
-            direction = new _private.Line(vertices[3], vertices[0]);
+            direction = new Geometry.Line(vertices[3], vertices[0]);
             angle = direction.getAngle();
             upsideLabel.transform('t' + textPos.x + ',' + textPos.y + 'r' + angle + 't0,' + posOffset);
         }

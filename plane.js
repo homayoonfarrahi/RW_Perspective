@@ -1,19 +1,19 @@
-var pTool = (function(pTool) {
+var Geometry = (function(Geometry) {
 
     // Cross-File Private State
-    var _private = pTool._private = pTool._private || {},
-        _seal = pTool._seal = pTool._seal || function() {
-            delete pTool._private;
-            delete pTool._seal;
-            delete pTool._unseal;
+    var _private = Geometry._private = Geometry._private || {},
+        _seal = Geometry._seal = Geometry._seal || function() {
+            delete Geometry._private;
+            delete Geometry._seal;
+            delete Geometry._unseal;
         },
-        _unseal = pTool._unseal = pTool._unseal || function() {
-            pTool._private = _private;
-            pTool._seal = _seal;
-            pTool._unseal = _unseal;
+        _unseal = Geometry._unseal = Geometry._unseal || function() {
+            Geometry._private = _private;
+            Geometry._seal = _seal;
+            Geometry._unseal = _unseal;
         };
 
-    _private.Plane = function(screenPointA, screenPointB, screenPointC, screenPointD, uvWidth, uvHeight) {
+    Geometry.Plane = function(screenPointA, screenPointB, screenPointC, screenPointD, uvWidth, uvHeight) {
         this.uvWidth = uvWidth;
         this.uvHeight = uvHeight;
 
@@ -31,13 +31,13 @@ var pTool = (function(pTool) {
         // 2D location of perspective point
         this.pd = screenPointD;
         // 2D location of perspective point
-        this.a = new _private.Point3D(0, 0, 0);
+        this.a = new Geometry.Point3D(0, 0, 0);
         // 3D location of perspective point
-        this.b = new _private.Point3D(0, 0, 0);
+        this.b = new Geometry.Point3D(0, 0, 0);
         // 3D location of perspective point
-        this.c = new _private.Point3D(0, 0, 0);
+        this.c = new Geometry.Point3D(0, 0, 0);
         // 3D location of perspective point
-        this.d = new _private.Point3D(0, 0, 0);
+        this.d = new Geometry.Point3D(0, 0, 0);
         // 3D location of perspective point
         this.tr_ac = null;
         // 2D transverse intersection point with vh-vv horizon line
@@ -73,26 +73,26 @@ var pTool = (function(pTool) {
             //  pb -------- pc               b ------ c
 
             //1a. Compute vanishing points
-            this.vh = _private.Line.findIntersect(this.pa, this.pd, this.pb, this.pc);
+            this.vh = Geometry.Line.findIntersect(this.pa, this.pd, this.pb, this.pc);
             //horizontal vanishing point of projected plane
-            this.vv = _private.Line.findIntersect(this.pa, this.pb, this.pc, this.pd);
+            this.vv = Geometry.Line.findIntersect(this.pa, this.pb, this.pc, this.pd);
             //vertical vanishing point of projected plane
-            this.cp = _private.Line.findIntersect(this.pa, this.pc, this.pb, this.pd);
+            this.cp = Geometry.Line.findIntersect(this.pa, this.pc, this.pb, this.pd);
             //center point of projected plane
 
             //1b. Compute transverse points (these are the lines that go through a-c & b-d (criss-cross), and intersect the horizon line of .vh-.vv)
-            this.tr_ac = _private.Line.findIntersect(this.pa, this.pc, this.vh, this.vv);
-            this.tr_bd = _private.Line.findIntersect(this.pb, this.pd, this.vh, this.vv);
+            this.tr_ac = Geometry.Line.findIntersect(this.pa, this.pc, this.vh, this.vv);
+            this.tr_bd = Geometry.Line.findIntersect(this.pb, this.pd, this.vh, this.vv);
 
             //2. Get length to vanishing points
-            avh = _private.Line.length2D(this.pa, this.vh);
-            avv = _private.Line.length2D(this.pa, this.vv);
-            bvh = _private.Line.length2D(this.pb, this.vh);
-            bvv = _private.Line.length2D(this.pb, this.vv);
-            cvh = _private.Line.length2D(this.pc, this.vh);
-            cvv = _private.Line.length2D(this.pc, this.vv);
-            dvh = _private.Line.length2D(this.pd, this.vh);
-            dvv = _private.Line.length2D(this.pd, this.vv);
+            avh = Geometry.Line.length2D(this.pa, this.vh);
+            avv = Geometry.Line.length2D(this.pa, this.vv);
+            bvh = Geometry.Line.length2D(this.pb, this.vh);
+            bvv = Geometry.Line.length2D(this.pb, this.vv);
+            cvh = Geometry.Line.length2D(this.pc, this.vh);
+            cvv = Geometry.Line.length2D(this.pc, this.vv);
+            dvh = Geometry.Line.length2D(this.pd, this.vh);
+            dvv = Geometry.Line.length2D(this.pd, this.vv);
 
             if (avh > 9900000)
                 avh = 9999999;
@@ -191,13 +191,13 @@ var pTool = (function(pTool) {
             return this;
         };
 
-        _private.Plane.findCenterPoint = function(a, b, c, d) {
+        Geometry.Plane.findCenterPoint = function(a, b, c, d) {
             //finds the center between FOUR points
             //to find the centerpoint between just TWO points (not four), then enter CenterPoint(a, b, a, b)
             var x1, x2, y1, y2;
             var ab, cd;
-            ab = new _private.Point2D(0, 0);
-            cd = new _private.Point2D(0, 0);
+            ab = new Geometry.Point2D(0, 0);
+            cd = new Geometry.Point2D(0, 0);
 
             //find the center between a and b
             if (a.x > b.x) {
@@ -245,13 +245,13 @@ var pTool = (function(pTool) {
                 y1 = ab.y;
             y2 = cd.y;
 
-            var ret = new _private.Point2D(0, 0);
+            var ret = new Geometry.Point2D(0, 0);
             ret.x = x1 + (x2 - x1) / 2;
             ret.y = y1 + (y2 - y1) / 2;
             return ret;
         }
 
-        _private.Plane.interpolateTrianglePerspective = function(x1, y1, z1, uv1, x2, y2, z2, uv2, x3, y3, z3, uv3, px, py) {
+        Geometry.Plane.interpolateTrianglePerspective = function(x1, y1, z1, uv1, x2, y2, z2, uv2, x3, y3, z3, uv3, px, py) {
             var px1, py1, px2, py2, px3, py3, xP, yP, zP;
 
             //Perspective (hyperbolic) triangle interpolation ------------------------------------
@@ -271,7 +271,7 @@ var pTool = (function(pTool) {
             z3 = 1 / z3;
 
             //2. Linearly interpolate the Z coordinate for the input point
-            zP = 1 / _private.Plane.interpolateTriangleLinear(x1, y1, z1, x2, y2, z2, x3, y3, z3, px, py);
+            zP = 1 / Geometry.Plane.interpolateTriangleLinear(x1, y1, z1, x2, y2, z2, x3, y3, z3, px, py);
 
             //3. Project the input point
             xP = (px * zP);
@@ -286,10 +286,10 @@ var pTool = (function(pTool) {
             py3 = (y3 / z3);
 
             //5. Linearly interpolate the value of the projected point in the projected triangle (perspective correction)
-            return _private.Plane.interpolateTriangleLinear(px1, py1, uv1, px2, py2, uv2, px3, py3, uv3, xP, yP);
+            return Geometry.Plane.interpolateTriangleLinear(px1, py1, uv1, px2, py2, uv2, px3, py3, uv3, xP, yP);
         };
 
-        _private.Plane.interpolateTriangleLinear = function(x1, y1, uv1, x2, y2, uv2, x3, y3, uv3, px, py) {
+        Geometry.Plane.interpolateTriangleLinear = function(x1, y1, uv1, x2, y2, uv2, x3, y3, uv3, px, py) {
 
             var d, u, v, w;
 
@@ -311,29 +311,29 @@ var pTool = (function(pTool) {
 
 
         this.screenToUV = function(px, py) {
-            var u = _private.Plane.interpolateTrianglePerspective(
+            var u = Geometry.Plane.interpolateTrianglePerspective(
                 this.pa.x, this.pa.y, this.a.z, 0,
                 this.pb.x, this.pb.y, this.b.z, 0,
                 this.pc.x, this.pc.y, this.c.z, this.uvWidth, px, py);
-            var v = _private.Plane.interpolateTrianglePerspective(
+            var v = Geometry.Plane.interpolateTrianglePerspective(
                 this.pa.x, this.pa.y, this.a.z, 0,
                 this.pb.x, this.pb.y, this.b.z, this.uvHeight,
                 this.pc.x, this.pc.y, this.c.z, this.uvHeight, px, py);
-            return new _private.Point2D(u, v);
+            return new Geometry.Point2D(u, v);
         };
 
         this.uvToScreen = function(pu, pv) {
-            var z = _private.Plane.interpolateTriangleLinear(
+            var z = Geometry.Plane.interpolateTriangleLinear(
                 0, 0, this.a.z,
                 0, this.uvHeight, this.b.z,
                 this.uvWidth, this.uvHeight, this.c.z, pu, pv);
 
-            var px = _private.Plane.interpolateTriangleLinear(
+            var px = Geometry.Plane.interpolateTriangleLinear(
                 0, 0, this.pa.x * this.a.z,
                 0, this.uvHeight, this.pb.x * this.b.z,
                 this.uvWidth, this.uvHeight, this.pc.x * this.c.z, pu, pv) / z;
 
-            var py = _private.Plane.interpolateTriangleLinear(
+            var py = Geometry.Plane.interpolateTriangleLinear(
                 0, 0, this.pa.y * this.a.z,
                 0, this.uvHeight, this.pb.y * this.b.z,
                 this.uvWidth, this.uvHeight, this.pc.y * this.c.z, pu, pv) / z;
@@ -342,12 +342,12 @@ var pTool = (function(pTool) {
             if (z < 0) {
                 return errorNegativeZ;
             }
-            return new _private.Point2D(px, py);
+            return new Geometry.Point2D(px, py);
         };
 
         this.computeZforProjectedPlane();
     }
 
-    return pTool;
+    return Geometry;
 
-})(pTool || {});
+})(Geometry || {});

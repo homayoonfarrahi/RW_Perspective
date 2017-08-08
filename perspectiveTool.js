@@ -15,10 +15,10 @@ var pTool = (function(pTool) {
 
     pTool.PerspectiveTool = function() {
         this.centers = [
-            new _private.Point2D(256, 498),
-            new _private.Point2D(255, 673),
-            new _private.Point2D(486, 607),
-            new _private.Point2D(445, 455)
+            new Geometry.Point2D(256, 498),
+            new Geometry.Point2D(255, 673),
+            new Geometry.Point2D(486, 607),
+            new Geometry.Point2D(445, 455)
         ];
 
         var active = true;
@@ -195,8 +195,8 @@ var pTool = (function(pTool) {
             var divOffsetX = $(element).offset().left;
             var divOffsetY = $(element).offset().top;
 
-            divOffset = new _private.Point2D(divOffsetX, divOffsetY);
-            divSize = new _private.Point2D(divWidth, divHeight);
+            divOffset = new Geometry.Point2D(divOffsetX, divOffsetY);
+            divSize = new Geometry.Point2D(divWidth, divHeight);
 
             if (pTool.PerspectiveTool.paper === undefined) {
                 pTool.PerspectiveTool.paper = Raphael(element, divSize.x, divSize.y);
@@ -234,7 +234,7 @@ var pTool = (function(pTool) {
                             if (circles[i].circle === circle) break;
                         }
 
-                        var newPos = initialCirclePos.clone().add(new _private.Point2D(dx, dy));
+                        var newPos = initialCirclePos.clone().add(new Geometry.Point2D(dx, dy));
 
                         newPos = snap.suggestPosition(this, newPos, null);
 
@@ -263,7 +263,7 @@ var pTool = (function(pTool) {
                           this.activate();
                         }
                         _private.isDragging = true;
-                        initialCirclePos = new _private.Point2D(circle.attr('cx'), circle.attr('cy'));
+                        initialCirclePos = new Geometry.Point2D(circle.attr('cx'), circle.attr('cy'));
                     }.bind(this);
 
                     var circleDragEnd = function(event) {
@@ -318,14 +318,14 @@ var pTool = (function(pTool) {
                         }
                         _private.isDragging = true;
                         dragging = true;
-                        otherLine1 = new _private.Line(getCenter(from), getCenter(from + 3));
-                        otherLine2 = new _private.Line(getCenter(from + 1), getCenter(from + 2));
-                        vanishingPoint = new _private.Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new _private.Line(getCenter(from + 2), getCenter(from + 3)));
-                        movementPoint = new _private.Line(getCenter(from), getCenter(from + 1)).closestPointTo(new _private.Point2D(x - divOffset.x, y - divOffset.y));
+                        otherLine1 = new Geometry.Line(getCenter(from), getCenter(from + 3));
+                        otherLine2 = new Geometry.Line(getCenter(from + 1), getCenter(from + 2));
+                        vanishingPoint = new Geometry.Line(getCenter(from), getCenter(from + 1)).findIntersectWithLine(new Geometry.Line(getCenter(from + 2), getCenter(from + 3)));
+                        movementPoint = new Geometry.Line(getCenter(from), getCenter(from + 1)).closestPointTo(new Geometry.Point2D(x - divOffset.x, y - divOffset.y));
                     }.bind(this);
 
                     var edgeDragMove = function(dx, dy, x, y) {
-                        var line = new _private.Line(vanishingPoint, new _private.Point2D(movementPoint.x + dx, movementPoint.y + dy));
+                        var line = new Geometry.Line(vanishingPoint, new Geometry.Point2D(movementPoint.x + dx, movementPoint.y + dy));
                         var newPoint1 = otherLine1.findIntersectWithLine(line);
                         var newPoint2 = otherLine2.findIntersectWithLine(line);
 
@@ -365,7 +365,7 @@ var pTool = (function(pTool) {
                         var direction1 = getCenter(from + 3).clone().subtract(getCenter(from)).normalize();
                         var direction2 = getCenter(from + 2).clone().subtract(getCenter(from + 1)).normalize();
                         var angleBisectorDirection = direction1.clone().add(direction2).divideBy(2);
-                        var angleBisectorLine = new _private.Line(new _private.Point2D(0, 0), angleBisectorDirection.clone());
+                        var angleBisectorLine = new Geometry.Line(new Geometry.Point2D(0, 0), angleBisectorDirection.clone());
                         this.setCursor(getCursorStyleForSlope(angleBisectorLine.getSlope()));
                         path.attr('stroke', _private.PerspectiveToolSettings.planeEdge.strokeHoverIn);
                     }.bind(this);
@@ -407,11 +407,11 @@ var pTool = (function(pTool) {
                 }
 
                 _private.isDragging = true;
-                plane = new _private.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
+                plane = new Geometry.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
                 uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
                 lastU = uv.x;
                 lastV = uv.y;
-                lastMousePos = new _private.Point2D(x, y);
+                lastMousePos = new Geometry.Point2D(x, y);
             }.bind(this);
 
             var end = function() {
@@ -444,14 +444,14 @@ var pTool = (function(pTool) {
                     this.centers[2].setTo(tmpPC);
                     this.centers[3].setTo(tmpPD);
                 } else {
-                    var screenMovement = new _private.Point2D(x - lastMousePos.x, y - lastMousePos.y);
+                    var screenMovement = new Geometry.Point2D(x - lastMousePos.x, y - lastMousePos.y);
 
                     this.centers[0].add(screenMovement);
                     this.centers[1].add(screenMovement);
                     this.centers[2].add(screenMovement);
                     this.centers[3].add(screenMovement);
 
-                    plane = new _private.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
+                    plane = new Geometry.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
                 }
 
                 updateCircles();
@@ -460,7 +460,7 @@ var pTool = (function(pTool) {
                 anchorSystem.update();
                 grid.update();
                 measurementsUI.update(this.centers);
-                lastMousePos.setTo(new _private.Point2D(x, y));
+                lastMousePos.setTo(new Geometry.Point2D(x, y));
             }.bind(this);
 
             var hoverIn = function() {
@@ -514,10 +514,10 @@ var pTool = (function(pTool) {
 
 
         this.setPoints = function(points) {
-            var p1 = new _private.Point2D(points[0].x, points[0].y),
-                p2 = new _private.Point2D(points[1].x, points[1].y),
-                p3 = new _private.Point2D(points[2].x, points[2].y),
-                p4 = new _private.Point2D(points[3].x, points[3].y);
+            var p1 = new Geometry.Point2D(points[0].x, points[0].y),
+                p2 = new Geometry.Point2D(points[1].x, points[1].y),
+                p3 = new Geometry.Point2D(points[2].x, points[2].y),
+                p4 = new Geometry.Point2D(points[3].x, points[3].y);
 
             this.centers[0].setTo(p1).add(this.offset).multiplyBy(this.scale);
             this.centers[1].setTo(p2).add(this.offset).multiplyBy(this.scale);
@@ -536,7 +536,7 @@ var pTool = (function(pTool) {
             this.update();
         }
 
-        this.offset = new _private.Point2D(0, 0);
+        this.offset = new Geometry.Point2D(0, 0);
         this.translate = function(offset) {
             this.offset.add({
                 x: offset.x / this.scale,
