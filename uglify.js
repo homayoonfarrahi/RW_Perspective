@@ -13,6 +13,8 @@ var files = [
     "grid.js",
     "measurements.js",
     "perspectiveTool.js",
+    "perspectiveManager.js",
+    "snap.js",
 ];
 
 var code = {};
