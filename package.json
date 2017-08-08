@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": { },
+  "dependencies": {
+    "uglify-js": "3.x"
+  },
+  "author": "Renoworks",
+  "license": "UNLICENSED"
+}
