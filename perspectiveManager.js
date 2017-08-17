@@ -23,6 +23,6 @@ PerspectiveManager = new function() {
       divHeight = dh;
       snap = new Snap();
       this.newPerspective();
-      this.newPerspective();
+      // this.newPerspective();
   }
 }

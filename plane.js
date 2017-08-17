@@ -309,6 +309,9 @@ var Geometry = (function(Geometry) {
             return (u * uv1) + (v * uv2) + (w * uv3);
         };
 
+        var toRadians = function(degree) {
+            return degree * (Math.PI / 180);
+        };
 
         this.screenToUV = function(px, py) {
             var u = Geometry.Plane.interpolateTrianglePerspective(
@@ -329,14 +332,14 @@ var Geometry = (function(Geometry) {
                 this.uvWidth, this.uvHeight, this.c.z, pu, pv);
 
             var px = Geometry.Plane.interpolateTriangleLinear(
-                0, 0, this.pa.x * this.a.z,
-                0, this.uvHeight, this.pb.x * this.b.z,
-                this.uvWidth, this.uvHeight, this.pc.x * this.c.z, pu, pv) / z;
+                0, 0, this.a.x,
+                0, this.uvHeight, this.b.x,
+                this.uvWidth, this.uvHeight, this.c.x, pu, pv) / z;
 
             var py = Geometry.Plane.interpolateTriangleLinear(
-                0, 0, this.pa.y * this.a.z,
-                0, this.uvHeight, this.pb.y * this.b.z,
-                this.uvWidth, this.uvHeight, this.pc.y * this.c.z, pu, pv) / z;
+                0, 0, this.a.y,
+                0, this.uvHeight, this.b.y,
+                this.uvWidth, this.uvHeight, this.c.y, pu, pv) / z;
 
             // this is a hack to fix negative z value cases causing wrong projected points
             if (z < 0) {
@@ -344,6 +347,48 @@ var Geometry = (function(Geometry) {
             }
             return new Geometry.Point2D(px, py);
         };
+
+        this.translate = function(vec) {
+          this.a.add(vec);
+          this.b.add(vec);
+          this.c.add(vec);
+          this.d.add(vec);
+        }
+
+        this.rotate = function() {
+          // console.log(this.a)
+          // console.log(this.b)
+          // console.log(this.c)
+          // console.log(this.d)
+          var degree = 20;
+          var rotationPoint = this.a.clone();
+          var cosVal = Math.cos(toRadians(degree));
+          var sinVal = Math.sin(toRadians(degree));
+
+          var ab = this.b.clone().subtract(this.a);
+          var ad = this.d.clone().subtract(this.a);
+          var normal = ab.crossProduct(ad);
+          var axis = normal;
+          console.log(axis)
+
+          var rotationMatrix = [
+            [cosVal + Math.pow(axis.x, 2) * (1 - cosVal), axis.x * axis.y * (1 - cosVal) - axis.z * sinVal, axis.x * axis.z * (1 - cosVal) + axis.y * sinVal],
+            [axis.y * axis.x * (1 - cosVal) + axis.z * sinVal, cosVal + Math.pow(axis.y, 2) * (1 - cosVal), axis.y * axis.z * (1 - cosVal) - axis.x * sinVal],
+            [axis.z * axis.x * (1 - cosVal) - axis.y * sinVal, axis.z * axis.y * (1 - cosVal) + axis.x * sinVal, cosVal + Math.pow(axis.z, 2) * (1 - cosVal)]
+          ];
+
+          this.translate(rotationPoint.clone().multiplyBy(-1));
+
+          this.a.setToColumnMatrix(math.multiply(rotationMatrix, this.a.getColumnMatrix()));
+
+          this.b.setToColumnMatrix(math.multiply(rotationMatrix, this.b.getColumnMatrix()));
+
+          this.c.setToColumnMatrix(math.multiply(rotationMatrix, this.c.getColumnMatrix()));
+
+          this.d.setToColumnMatrix(math.multiply(rotationMatrix, this.d.getColumnMatrix()));
+
+          this.translate(rotationPoint);
+        }
 
         this.computeZforProjectedPlane();
     }

@@ -408,6 +408,9 @@ var pTool = (function(pTool) {
 
                 _private.isDragging = true;
                 plane = new Geometry.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
+
+                plane.rotate()
+
                 uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
                 lastU = uv.x;
                 lastV = uv.y;
