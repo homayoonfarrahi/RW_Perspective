@@ -35,7 +35,9 @@ var pTool = (function(pTool) {
           var T = vpsLine.projectPoint(new Geometry.Point2D(0.0, 0.0));
           var TCp = Math.sqrt(this.vanishingPoints[0].distanceFromPoint(T) * this.vanishingPoints[1].distanceFromPoint(T));
           var TCi = T.distanceFromPoint(new Geometry.Point2D(0.0, 0.0));
-          var focalLength = Math.sqrt((TCp * TCp) - (TCi * TCi));
+
+          // the abs in the following line should be temporary because center of image is not exact
+          var focalLength = Math.sqrt(Math.abs((TCp * TCp) - (TCi * TCi)));
           this.camera.z = focalLength;
           this.calculateVanishingVectors();
         }
@@ -78,16 +80,11 @@ var pTool = (function(pTool) {
         var vv1 = vp1_3d.clone().subtract(this.camera).normalize();
         var vv2 = vp2_3d.clone().subtract(this.camera).normalize();
         var vv3 = vv1.clone().crossProduct(vv2).normalize();
-        // if (vv3.z > 0) {
-        //   vv3 = vv3.multiplyBy(-1);
-        // }
 
         this.vanishingVectors.push(vv1, vv2, vv3);
         var vp3_3d = vv3.findIntersectWithPlaneZ(-this.camera.z);
         vp3_3d = vp3_3d.add(new Geometry.Point3D(0.0, 0.0, this.camera.z));
         this.vanishingPoints.push(vp3_3d.clone2D());
-        // console.log(this.vanishingPoints);
-        // console.log(this.vanishingVectors);
       }
 
       this.findCorrectPointOrdering = function(points) {
@@ -128,25 +125,33 @@ var pTool = (function(pTool) {
         return orderedPoints;
       }
 
-      this.rotate = function(i) {
+      this.rotate = function(i, angle) {
+        var newPositions = [];
+        newPositions[i] = this.vertices[i];
+        newPositions[(i + 1) % 4] = this.vertices[(i + 1) % 4];
+
         // calculate the position of the half degree vanishing point
-        var rotationDirection = this.vanishingVectors[2].clone().crossProduct(this.vanishingVectors[(i + 1) % 2]);
-        var halfDegreeVV = this.vanishingVectors[2].clone().rotate(rotationDirection, 135);
+        var rotationDirection = this.vanishingVectors[(i + 1) % 2].clone().crossProduct(this.vanishingVectors[2]);
+
+        var newEdgeVV = this.vanishingVectors[(i + 1) % 2].clone().rotate(rotationDirection, angle);
+        var newEdgeVP = newEdgeVV.findIntersectWithPlaneZ(-this.camera.z);
+        newEdgeVP = newEdgeVP.add(new Geometry.Point3D(0.0, 0.0, this.camera.z));
+        newEdgeVP = newEdgeVP.clone2D();
+
+        var halfDegreeVV = this.vanishingVectors[2].clone().rotate(rotationDirection, angle / 2);
         var halfDegreeVP = halfDegreeVV.findIntersectWithPlaneZ(-this.camera.z);
         halfDegreeVP = halfDegreeVP.add(new Geometry.Point3D(0.0, 0.0, this.camera.z));
         halfDegreeVP = halfDegreeVP.clone2D();
 
-        var newEdgeLine = new Geometry.Line(this.vanishingPoints[2], this.vertices[i]);
+        var newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[i]);
         var intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(i + 3) % 4]);
         var newPoint1 = newEdgeLine.findIntersectWithLine(intersectorLine);
+        newPositions[(i + 3) % 4] = newPoint1;
 
-        newEdgeLine = new Geometry.Line(this.vanishingPoints[2], this.vertices[(i + 1) % 4]);
+        newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[(i + 1) % 4]);
         intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(i + 2) % 4]);
         var newPoint2 = newEdgeLine.findIntersectWithLine(intersectorLine);
-
-        var newPositions = [];
-        newPositions.push(newPoint2, this.vertices[(i + 1) % 4], this.vertices[i], newPoint1);
-        newPositions = this.findCorrectPointOrdering(newPositions);
+        newPositions[(i + 2) % 4] = newPoint2;
 
         for (var j = 0; j < newPositions.length; j++) {
           newPositions[j] = this.transformPointToOriginalSpace(newPositions[j], this.perspectiveTool.getDivSize());

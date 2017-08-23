@@ -343,6 +343,7 @@ var Geometry = (function(Geometry) {
 
             // this is a hack to fix negative z value cases causing wrong projected points
             if (z < 0) {
+                errorNegativeZ = 'error negative z';
                 return errorNegativeZ;
             }
             return new Geometry.Point2D(px, py);

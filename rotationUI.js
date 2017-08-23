@@ -42,13 +42,6 @@ var pTool = (function(pTool) {
             var dragStart = function(x, y, event) {
               rotationLogic = new _private.RotationLogic(this.vertices, this.perspectiveTool);
 
-              // temporarily rotate 90 degrees
-              var newPositions = rotationLogic.rotate(i);
-              for (var j = 0; j < this.vertices.length; j++) {
-                this.vertices[j].setTo(newPositions[j]);
-              }
-
-              this.perspectiveTool.update();
             }.bind(this);
 
             var dragMove = function(dx, dy, x, y, event) {
@@ -57,7 +50,13 @@ var pTool = (function(pTool) {
               var movement = new Geometry.Point2D(dx, dy).projectOnVector(movementDirection);
               var rotationAngle = Math.sign(movement.clone().dotProduct(movementDirection)) * movement.getLength();
 
-              // TODO implement the rotation logic here
+              // the rotation logic
+              var newPositions = rotationLogic.rotate(i, rotationAngle);
+              for (var j = 0; j < this.vertices.length; j++) {
+                this.vertices[j].setTo(newPositions[j]);
+              }
+
+              this.perspectiveTool.update();
             }.bind(this);
 
             var dragEnd = function() {
