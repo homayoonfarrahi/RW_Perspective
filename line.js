@@ -148,6 +148,19 @@ var Geometry = (function(Geometry) {
           return projectionPoint;
         }
 
+        this.isParallelWith = function(other) {
+          a1 = this.p1.y - this.p2.y;
+          a2 = other.p1.y - other.p2.y;
+          b1 = this.p2.x - this.p1.x;
+          b2 = other.p2.x - other.p1.x;
+
+          if (a2 * b1 == a1 * b2) {
+            return true;
+          }
+
+          return false;
+        }
+
         Geometry.Line.findIntersect = function(a, b, c, d) {
             //finds intersection between line a-b and line c-d
             var a1 = 0,

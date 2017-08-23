@@ -43,6 +43,7 @@ var pTool = (function(pTool) {
         var grid;
         var plane;
         var measurementsUI;
+        var rotationUI;
         var snap;
 
         var getPathString = function getPathString(circle1, circle2) {
@@ -256,6 +257,7 @@ var pTool = (function(pTool) {
                         anchorSystem.update();
                         grid.update();
                         measurementsUI.update(this.centers);
+                        rotationUI.update();
                     }.bind(this);
 
                     var circleDragStart = function(x, y, event) {
@@ -352,6 +354,7 @@ var pTool = (function(pTool) {
                         anchorSystem.update();
                         grid.update();
                         measurementsUI.update(this.centers);
+                        rotationUI.update();
                     }.bind(this);
 
                     var edgeDragEnd = function(event) {
@@ -409,7 +412,7 @@ var pTool = (function(pTool) {
                 _private.isDragging = true;
                 plane = new Geometry.Plane(this.centers[0].clone(), this.centers[1].clone(), this.centers[2].clone(), this.centers[3].clone(), 300, 300);
 
-                plane.rotate()
+                // plane.rotate()
 
                 uv = plane.screenToUV(x - divOffset.x, y - divOffset.y);
                 lastU = uv.x;
@@ -463,6 +466,7 @@ var pTool = (function(pTool) {
                 anchorSystem.update();
                 grid.update();
                 measurementsUI.update(this.centers);
+                rotationUI.update();
                 lastMousePos.setTo(new Geometry.Point2D(x, y));
             }.bind(this);
 
@@ -493,6 +497,8 @@ var pTool = (function(pTool) {
             anchorSystem.addAnchorLinesToSet(nonInteractableSet);
 
             grid = new _private.Grid(this.centers[0], this.centers[1], this.centers[2], this.centers[3], this.widthFeet, this.heightFeet, paper);
+
+            rotationUI = new _private.RotationUI(this.centers, this, paper);
 
 
             // nonInteractableSet.insertAfter(backgroundSet);
@@ -566,6 +572,7 @@ var pTool = (function(pTool) {
             anchorSystem.update();
             grid.update();
             measurementsUI.update(this.centers);
+            rotationUI.update();
         }
 
         this.activate = function() {
@@ -584,6 +591,10 @@ var pTool = (function(pTool) {
 
         this.getSnap = function() {
           return snap;
+        }
+
+        this.getDivSize = function() {
+          return divSize;
         }
     }
 

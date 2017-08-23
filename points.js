@@ -76,6 +76,15 @@ var Geometry = (function(Geometry) {
         this.dotProduct = function(other) {
           return this.x * other.x + this.y * other.y;
         }
+
+        this.projectOnVector = function(v) {
+          var projectedVec = new Geometry.Point2D(v.x, v.y);
+          return projectedVec.multiplyBy(this.clone().dotProduct(v) / v.clone().dotProduct(v));
+        }
+
+        this.getLength = function() {
+          return Math.sqrt((this.x * this.x) + (this.y * this.y));
+        }
     }
 
     Geometry.Point3D = function(x, y, z) {
@@ -141,6 +150,11 @@ var Geometry = (function(Geometry) {
           return new Geometry.Point3D(s1, s2, s3).normalize();
         }
 
+        this.findIntersectWithPlaneZ = function(z) {
+          var multiplier = z / this.z;
+          return this.clone().multiplyBy(multiplier);
+        }
+
         this.getColumnMatrix = function() {
           return [
             [this.x],
@@ -155,8 +169,23 @@ var Geometry = (function(Geometry) {
           this.z = matrix[2][0];
         }
 
-        this.translateBy = function(p) {
+        var toRadians = function(degree) {
+            return degree * (Math.PI / 180);
+        };
 
+        this.rotate = function(axis, angle) {
+          var cosVal = Math.cos(toRadians(angle));
+          var sinVal = Math.sin(toRadians(angle));
+
+          var rotationMatrix = [
+            [cosVal + Math.pow(axis.x, 2) * (1 - cosVal), axis.x * axis.y * (1 - cosVal) - axis.z * sinVal, axis.x * axis.z * (1 - cosVal) + axis.y * sinVal],
+            [axis.y * axis.x * (1 - cosVal) + axis.z * sinVal, cosVal + Math.pow(axis.y, 2) * (1 - cosVal), axis.y * axis.z * (1 - cosVal) - axis.x * sinVal],
+            [axis.z * axis.x * (1 - cosVal) - axis.y * sinVal, axis.z * axis.y * (1 - cosVal) + axis.x * sinVal, cosVal + Math.pow(axis.z, 2) * (1 - cosVal)]
+          ];
+
+          result =  this.clone();
+          result.setToColumnMatrix(math.multiply(rotationMatrix, this.getColumnMatrix()));
+          return result;
         }
     }
 
