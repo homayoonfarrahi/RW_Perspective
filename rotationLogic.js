@@ -17,6 +17,7 @@ var pTool = (function(pTool) {
       this.vertices = [];
       this.perspectiveTool = perspectiveTool;
       this.vanishingPoints = [];
+      this.centerOfImage = new Geometry.Point3D(0.0, 0.0, 0.0);
       this.camera = new Geometry.Point3D(0.0, 0.0, 0.0);
       this.vanishingVectors = [];
 
@@ -26,11 +27,13 @@ var pTool = (function(pTool) {
         }
 
         var edges = this.createEdgesFromVertices();
+        this.vanishingPoints = this.calculateVanishingPoints(edges);
 
-        if (edges[0].isParallelWith(edges[2]) || edges[1].isParallelWith(edges[3])) {
-          this.camera.z = this.perspectiveTool.getDivSize().x / 2;
+        if (this.isPointAtInfinity(this.vanishingPoints[0]) && this.isPointAtInfinity(this.vanishingPoints[1])) {
+          this.centerOfImage = new Geometry.Point3D(0.0, 0.0, 0.0);
+          this.camera = this.centerOfImage.clone();
+          this.camera.z = 2 * Math.max(this.perspectiveTool.getDivSize().x, this.perspectiveTool.getDivSize().y);
         } else {
-          this.vanishingPoints = this.calculateVanishingPoints(edges);
           var vpsLine = new Geometry.Line(this.vanishingPoints[0], this.vanishingPoints[1]);
           var T = vpsLine.projectPoint(new Geometry.Point2D(0.0, 0.0));
           var TCp = Math.sqrt(this.vanishingPoints[0].distanceFromPoint(T) * this.vanishingPoints[1].distanceFromPoint(T));
@@ -38,9 +41,16 @@ var pTool = (function(pTool) {
 
           // the abs in the following line should be temporary because center of image is not exact
           var focalLength = Math.sqrt(Math.abs((TCp * TCp) - (TCi * TCi)));
+
+          // TODO center of image has to be calculated more accurately
+          this.centerOfImage = new Geometry.Point3D(0.0, 0.0, 0.0);
+
+          this.camera = this.centerOfImage.clone();
           this.camera.z = focalLength;
-          this.calculateVanishingVectors();
+
         }
+
+        this.calculateVanishingVectors();
       }
 
       this.createEdgesFromVertices = function() {
@@ -52,6 +62,14 @@ var pTool = (function(pTool) {
         edges.push(ab, bc, cd, da);
 
         return edges;
+      }
+
+      this.isPointAtInfinity = function(p) {
+        if (p.x > 99999 || p.y > 99999) {
+          return true;
+        }
+
+        return false;
       }
 
       this.transformPointToNormalizedSpace = function(point, imageSize) {
@@ -75,13 +93,28 @@ var pTool = (function(pTool) {
       }
 
       this.calculateVanishingVectors = function() {
-        var vp1_3d = new Geometry.Point3D(this.vanishingPoints[0].x, this.vanishingPoints[0].y, 0.0);
-        var vp2_3d = new Geometry.Point3D(this.vanishingPoints[1].x, this.vanishingPoints[1].y, 0.0);
-        var vv1 = vp1_3d.clone().subtract(this.camera).normalize();
-        var vv2 = vp2_3d.clone().subtract(this.camera).normalize();
+        var vv1 = null;
+        var vv2 = null;
+        var edges = this.createEdgesFromVertices();
+
+        if (this.isPointAtInfinity(this.vanishingPoints[0])) {
+          vv1 = new Geometry.Point3D(edges[0].getDirection().x, edges[0].getDirection().y, 0.0);
+        } else {
+          var vp1_3d = new Geometry.Point3D(this.vanishingPoints[0].x, this.vanishingPoints[0].y, 0.0);
+          vv1 = vp1_3d.clone().subtract(this.camera).normalize();
+        }
+
+        if (this.isPointAtInfinity(this.vanishingPoints[1])) {
+          vv2 = new Geometry.Point3D(edges[1].getDirection().x, edges[1].getDirection().y, 0.0);
+        } else {
+          var vp2_3d = new Geometry.Point3D(this.vanishingPoints[1].x, this.vanishingPoints[1].y, 0.0);
+          vv2 = vp2_3d.clone().subtract(this.camera).normalize();
+        }
+
         var vv3 = vv1.clone().crossProduct(vv2).normalize();
 
         this.vanishingVectors.push(vv1, vv2, vv3);
+
         var vp3_3d = vv3.findIntersectWithPlaneZ(-this.camera.z);
         vp3_3d = vp3_3d.add(new Geometry.Point3D(0.0, 0.0, this.camera.z));
         this.vanishingPoints.push(vp3_3d.clone2D());
@@ -101,7 +134,6 @@ var pTool = (function(pTool) {
         orderedPoints.push(points[firstPointIndex]);
         points.splice(firstPointIndex, 1);
         points.sort(function(p1, p2) {
-          console.log(orderedPoints)
           var edgeDirection1 = p1.clone().subtract(orderedPoints[0]);
           var edgeDirection2 = p2.clone().subtract(orderedPoints[0]);
 

@@ -151,7 +151,13 @@ var Geometry = (function(Geometry) {
         }
 
         this.findIntersectWithPlaneZ = function(z) {
-          var multiplier = z / this.z;
+          var multiplier = 1;
+          if (this.z === 0) {
+            multiplier = 1000000;
+          } else {
+            multiplier = z / this.z;
+          }
+          
           return this.clone().multiplyBy(multiplier);
         }
 
