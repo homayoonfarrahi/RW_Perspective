@@ -153,11 +153,12 @@ var Geometry = (function(Geometry) {
         this.findIntersectWithPlaneZ = function(z) {
           var multiplier = 1;
           if (this.z === 0) {
+            // FIXME multiplier should be -1000000 in some cases? (or maybe not?)
             multiplier = 1000000;
           } else {
             multiplier = z / this.z;
           }
-          
+
           return this.clone().multiplyBy(multiplier);
         }
 
@@ -189,7 +190,7 @@ var Geometry = (function(Geometry) {
             [axis.z * axis.x * (1 - cosVal) - axis.y * sinVal, axis.z * axis.y * (1 - cosVal) + axis.x * sinVal, cosVal + Math.pow(axis.z, 2) * (1 - cosVal)]
           ];
 
-          result =  this.clone();
+          var result =  this.clone();
           result.setToColumnMatrix(math.multiply(rotationMatrix, this.getColumnMatrix()));
           return result;
         }

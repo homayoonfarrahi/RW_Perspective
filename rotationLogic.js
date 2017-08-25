@@ -28,27 +28,39 @@ var pTool = (function(pTool) {
 
         var edges = this.createEdgesFromVertices();
         this.vanishingPoints = this.calculateVanishingPoints(edges);
+        var focalLength = 1.0;
 
         if (this.isPointAtInfinity(this.vanishingPoints[0]) && this.isPointAtInfinity(this.vanishingPoints[1])) {
           this.centerOfImage = new Geometry.Point3D(0.0, 0.0, 0.0);
-          this.camera = this.centerOfImage.clone();
-          this.camera.z = 2 * Math.max(this.perspectiveTool.getDivSize().x, this.perspectiveTool.getDivSize().y);
-        } else {
-          var vpsLine = new Geometry.Line(this.vanishingPoints[0], this.vanishingPoints[1]);
-          var T = vpsLine.projectPoint(new Geometry.Point2D(0.0, 0.0));
-          var TCp = Math.sqrt(this.vanishingPoints[0].distanceFromPoint(T) * this.vanishingPoints[1].distanceFromPoint(T));
-          var TCi = T.distanceFromPoint(new Geometry.Point2D(0.0, 0.0));
+          focalLength = 2;
+        }
+        else if (this.isPointAtInfinity(this.vanishingPoints[0]) || this.isPointAtInfinity(this.vanishingPoints[1])) {
+          var finiteVPIndex = 0;
+          if (this.isPointAtInfinity(this.vanishingPoints[0])) {
+            finiteVPIndex = 1;
+          }
 
-          // the abs in the following line should be temporary because center of image is not exact
-          var focalLength = Math.sqrt(Math.abs((TCp * TCp) - (TCi * TCi)));
-
+          var ciPoint2 = edges[(i + 1) % 2].projectPoint(this.vanishingPoints[finiteVPIndex]);
+          var ciLine = new Geometry.Line(this.vanishingPoints[finiteVPIndex], ciPoint2);
+          var ciPoint2D = ciLine.projectPoint(new Geometry.Point2D(0.0, 0.0));
+          this.centerOfImage = new Geometry.Point3D(ciPoint2D.x, ciPoint2D.y, 0.0);
+          focalLength = 2;
+        }
+        else {
           // TODO center of image has to be calculated more accurately
           this.centerOfImage = new Geometry.Point3D(0.0, 0.0, 0.0);
 
-          this.camera = this.centerOfImage.clone();
-          this.camera.z = focalLength;
+          var vpsLine = new Geometry.Line(this.vanishingPoints[0], this.vanishingPoints[1]);
+          var T = vpsLine.projectPoint(this.centerOfImage.clone2D());
+          var TCp = Math.sqrt(this.vanishingPoints[0].distanceFromPoint(T) * this.vanishingPoints[1].distanceFromPoint(T));
+          var TCi = T.distanceFromPoint(this.centerOfImage.clone2D());
 
+          // the abs in the following line should be temporary because center of image is not exact
+          focalLength = Math.sqrt(Math.abs((TCp * TCp) - (TCi * TCi)));
         }
+
+        this.camera = this.centerOfImage.clone();
+        this.camera = this.camera.add(new Geometry.Point3D(0.0, 0.0, focalLength));
 
         this.calculateVanishingVectors();
       }
@@ -65,7 +77,7 @@ var pTool = (function(pTool) {
       }
 
       this.isPointAtInfinity = function(p) {
-        if (p.x > 99999 || p.y > 99999) {
+        if (Math.abs(p.x) > 99999 || Math.abs(p.y) > 99999) {
           return true;
         }
 
@@ -167,12 +179,12 @@ var pTool = (function(pTool) {
 
         var newEdgeVV = this.vanishingVectors[(i + 1) % 2].clone().rotate(rotationDirection, angle);
         var newEdgeVP = newEdgeVV.findIntersectWithPlaneZ(-this.camera.z);
-        newEdgeVP = newEdgeVP.add(new Geometry.Point3D(0.0, 0.0, this.camera.z));
+        newEdgeVP = newEdgeVP.add(this.camera);
         newEdgeVP = newEdgeVP.clone2D();
 
         var halfDegreeVV = this.vanishingVectors[2].clone().rotate(rotationDirection, angle / 2);
         var halfDegreeVP = halfDegreeVV.findIntersectWithPlaneZ(-this.camera.z);
-        halfDegreeVP = halfDegreeVP.add(new Geometry.Point3D(0.0, 0.0, this.camera.z));
+        halfDegreeVP = halfDegreeVP.add(this.camera);
         halfDegreeVP = halfDegreeVP.clone2D();
 
         var newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[i]);
