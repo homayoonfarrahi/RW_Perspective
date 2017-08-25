@@ -299,6 +299,8 @@ var Geometry = (function(Geometry) {
             v = 0;
             w = 0;
 
+            // FIXME d becomes infinity when drawing an exact trapezoid, causing NaNs
+            // {x: 200, y: 200}, {x: 200, y: 400}, {x: 400, y: 500}, {x: 400, y: 100}
             d = 1 / (((x2 - x1) * (y3 - y1)) - ((y2 - y1) * (x3 - x1)));
             //divisor (pre-computed for speed)
 

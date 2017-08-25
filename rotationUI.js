@@ -27,6 +27,8 @@ var pTool = (function(pTool) {
           handle = this.paper.image("icon_rotate.png", 0, 0, iconSize.x, iconSize.y);
 
           (function(i, handle) {
+            var wasMoved = false;
+
             var hoverIn = function() {
               handles[i].attr('width', iconSize.x * 1.5);
               handles[i].attr('height', iconSize.y * 1.5);
@@ -45,13 +47,28 @@ var pTool = (function(pTool) {
             }.bind(this);
 
             var dragMove = function(dx, dy, x, y, event) {
+              if (dx !== 0 || dy !== 0) {
+                wasMoved = true;
+              }
+
               hoverIn();
               var movementDirection = this.vertices[(i + 1) % 4].clone().subtract(this.vertices[i]);
               var movement = new Geometry.Point2D(dx, dy).projectOnVector(movementDirection);
               var rotationAngle = Math.sign(movement.clone().dotProduct(movementDirection)) * movement.getLength();
+              rotationAngle = Math.round(rotationAngle)
 
               // the rotation logic
-              var newPositions = rotationLogic.rotate(i, rotationAngle);
+              // if angle is 180 do a 90 degree first to eliminate the need for intersecting two parallel lines
+              var newPositions;
+              if (Math.abs(rotationAngle % 360) === 180) {
+                newPositions = rotationLogic.rotate(i, 90);
+                rotationAngle -= 90;
+                var rotationLogic_90deg = new _private.RotationLogic(newPositions, this.perspectiveTool);
+                newPositions = rotationLogic_90deg.rotate(i, rotationAngle);
+              } else {
+                newPositions = rotationLogic.rotate(i, rotationAngle);
+              }
+
               for (var j = 0; j < this.vertices.length; j++) {
                 this.vertices[j].setTo(newPositions[j]);
               }
@@ -60,8 +77,18 @@ var pTool = (function(pTool) {
             }.bind(this);
 
             var dragEnd = function() {
+              // do a one time 90 degree rotate if user just clicked without moving
+              if (!wasMoved) {
+                var newPositions = rotationLogic.rotate(i, 90);
+                for (var j = 0; j < this.vertices.length; j++) {
+                  this.vertices[j].setTo(newPositions[j]);
+                }
+
+                this.perspectiveTool.update();
+              }
               hoverOut();
-            }
+              wasMoved = false;
+            }.bind(this);
 
             handle.hover(hoverIn, hoverOut);
             handle.drag(dragMove, dragStart, dragEnd);
