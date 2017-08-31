@@ -82,6 +82,14 @@ var Geometry = (function(Geometry) {
           return projectedVec.multiplyBy(this.clone().dotProduct(v) / v.clone().dotProduct(v));
         }
 
+        this.getPerpendicularDirection = function() {
+          var vec_3d = new Geometry.Point3D(this.x, this.y, 0.0);
+          var zVec = new Geometry.Point3D(0.0, 0.0, 1.0);
+          var perpendicular_3d = vec_3d.crossProduct(zVec);
+
+          return perpendicular_3d.clone2D();
+        }
+
         this.getLength = function() {
           return Math.sqrt((this.x * this.x) + (this.y * this.y));
         }

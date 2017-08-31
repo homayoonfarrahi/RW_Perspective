@@ -40,7 +40,7 @@ var pTool = (function(pTool) {
             finiteVPIndex = 1;
           }
 
-          var ciPoint2 = edges[(i + 1) % 2].projectPoint(this.vanishingPoints[finiteVPIndex]);
+          var ciPoint2 = edges[i % 2].projectPoint(this.vanishingPoints[finiteVPIndex]);
           var ciLine = new Geometry.Line(this.vanishingPoints[finiteVPIndex], ciPoint2);
           var ciPoint2D = ciLine.projectPoint(new Geometry.Point2D(0.0, 0.0));
           this.centerOfImage = new Geometry.Point3D(ciPoint2D.x, ciPoint2D.y, 0.0);
@@ -169,15 +169,38 @@ var pTool = (function(pTool) {
         return orderedPoints;
       }
 
-      this.rotate = function(i, angle) {
+      this.isPolygonConcave = function(positions) {
+        var crossProductZs = [];
+        for (var index = 0; index < positions.length; index++) {
+            var prevIndex = (index + positions.length - 1) % positions.length;
+            var nextIndex = (index + 1) % positions.length;
+
+            var vec1 = positions[prevIndex].clone().subtract(positions[index]);
+            var vec2 = positions[nextIndex].clone().subtract(positions[index]);
+
+            var crossProductZ = (vec1.x * vec2.y) - (vec1.y * vec2.x);
+            crossProductZs.push(crossProductZ);
+        }
+
+        for (var i = 0; i < crossProductZs.length - 1; i++) {
+            if (crossProductZs[i] * crossProductZs[i + 1] < 0) {
+                return true;
+            }
+        }
+
+        return false;
+      }
+
+      this.rotate = function(edgeIndex, angle) {
+        console.log(angle)
         var newPositions = [];
-        newPositions[i] = this.vertices[i];
-        newPositions[(i + 1) % 4] = this.vertices[(i + 1) % 4];
+        newPositions[edgeIndex] = this.vertices[edgeIndex];
+        newPositions[(edgeIndex + 1) % 4] = this.vertices[(edgeIndex + 1) % 4];
 
         // calculate the position of the half degree vanishing point
-        var rotationDirection = this.vanishingVectors[(i + 1) % 2].clone().crossProduct(this.vanishingVectors[2]);
+        var rotationDirection = this.vanishingVectors[(edgeIndex + 1) % 2].clone().crossProduct(this.vanishingVectors[2]);
 
-        var newEdgeVV = this.vanishingVectors[(i + 1) % 2].clone().rotate(rotationDirection, angle);
+        var newEdgeVV = this.vanishingVectors[(edgeIndex + 1) % 2].clone().rotate(rotationDirection, angle);
         var newEdgeVP = newEdgeVV.findIntersectWithPlaneZ(-this.camera.z);
         newEdgeVP = newEdgeVP.add(this.camera);
         newEdgeVP = newEdgeVP.clone2D();
@@ -187,15 +210,26 @@ var pTool = (function(pTool) {
         halfDegreeVP = halfDegreeVP.add(this.camera);
         halfDegreeVP = halfDegreeVP.clone2D();
 
-        var newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[i]);
-        var intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(i + 3) % 4]);
-        var newPoint1 = newEdgeLine.findIntersectWithLine(intersectorLine);
-        newPositions[(i + 3) % 4] = newPoint1;
+        var newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[edgeIndex]);
+        var intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(edgeIndex + 3) % 4]);
+        var edgeOffset = 1;
+        if (newEdgeLine.isParallelWith(intersectorLine)) {
+          newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[(edgeIndex + 1) % 4]);
+          intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(edgeIndex + 2) % 4]);
+          edgeOffset = 0;
+        }
 
-        newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[(i + 1) % 4]);
-        intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(i + 2) % 4]);
+        var newPoint1 = newEdgeLine.findIntersectWithLine(intersectorLine);
+        newPositions[(edgeIndex + 2 + edgeOffset) % 4] = newPoint1;
+
+        newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[(edgeIndex + edgeOffset) % 4]);
+        intersectorLine = new Geometry.Line(this.vanishingPoints[edgeIndex % 2], newPoint1);
         var newPoint2 = newEdgeLine.findIntersectWithLine(intersectorLine);
-        newPositions[(i + 2) % 4] = newPoint2;
+        newPositions[(edgeIndex + 2 + (1 - edgeOffset)) % 4] = newPoint2;
+
+        if (this.isPolygonConcave(newPositions)) {
+          return null;
+        }
 
         for (var j = 0; j < newPositions.length; j++) {
           newPositions[j] = this.transformPointToOriginalSpace(newPositions[j], this.perspectiveTool.getDivSize());

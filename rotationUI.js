@@ -52,10 +52,11 @@ var pTool = (function(pTool) {
               }
 
               hoverIn();
-              var movementDirection = this.vertices[(i + 1) % 4].clone().subtract(this.vertices[i]);
+              var staticEdgeDirection = this.vertices[(i + 1) % 4].clone().subtract(this.vertices[i]);
+              var movementDirection = staticEdgeDirection.getPerpendicularDirection();
               var movement = new Geometry.Point2D(dx, dy).projectOnVector(movementDirection);
               var rotationAngle = Math.sign(movement.clone().dotProduct(movementDirection)) * movement.getLength();
-              rotationAngle = Math.round(rotationAngle)
+              rotationAngle = -Math.round(rotationAngle) / 2
 
               // the rotation logic
               // if angle is 180 do a 90 degree first to eliminate the need for intersecting two parallel lines
@@ -69,22 +70,26 @@ var pTool = (function(pTool) {
                 newPositions = rotationLogic.rotate(i, rotationAngle);
               }
 
-              for (var j = 0; j < this.vertices.length; j++) {
-                this.vertices[j].setTo(newPositions[j]);
-              }
+              if (newPositions !== null) {
+                for (var j = 0; j < this.vertices.length; j++) {
+                  this.vertices[j].setTo(newPositions[j]);
+                }
 
-              this.perspectiveTool.update();
+                this.perspectiveTool.update();
+              }
             }.bind(this);
 
             var dragEnd = function() {
               // do a one time 90 degree rotate if user just clicked without moving
               if (!wasMoved) {
                 var newPositions = rotationLogic.rotate(i, 90);
-                for (var j = 0; j < this.vertices.length; j++) {
-                  this.vertices[j].setTo(newPositions[j]);
-                }
+                if (newPositions !== null) {
+                  for (var j = 0; j < this.vertices.length; j++) {
+                    this.vertices[j].setTo(newPositions[j]);
+                  }
 
-                this.perspectiveTool.update();
+                  this.perspectiveTool.update();
+                }
               }
               hoverOut();
               wasMoved = false;
