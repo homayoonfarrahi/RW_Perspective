@@ -40,7 +40,7 @@ var pTool = (function(pTool) {
             finiteVPIndex = 1;
           }
 
-          var ciPoint2 = edges[i % 2].projectPoint(this.vanishingPoints[finiteVPIndex]);
+          var ciPoint2 = edges[1 - finiteVPIndex].projectPoint(this.vanishingPoints[finiteVPIndex]);
           var ciLine = new Geometry.Line(this.vanishingPoints[finiteVPIndex], ciPoint2);
           var ciPoint2D = ciLine.projectPoint(new Geometry.Point2D(0.0, 0.0));
           this.centerOfImage = new Geometry.Point3D(ciPoint2D.x, ciPoint2D.y, 0.0);
@@ -192,7 +192,6 @@ var pTool = (function(pTool) {
       }
 
       this.rotate = function(edgeIndex, angle) {
-        console.log(angle)
         var newPositions = [];
         newPositions[edgeIndex] = this.vertices[edgeIndex];
         newPositions[(edgeIndex + 1) % 4] = this.vertices[(edgeIndex + 1) % 4];
@@ -213,7 +212,9 @@ var pTool = (function(pTool) {
         var newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[edgeIndex]);
         var intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(edgeIndex + 3) % 4]);
         var edgeOffset = 1;
-        if (newEdgeLine.isParallelWith(intersectorLine)) {
+
+        // if the two lines are almost parallel, calculate the other point first
+        if (Math.abs(newEdgeLine.getAngle() - intersectorLine.getAngle()) < 0.01) {
           newEdgeLine = new Geometry.Line(newEdgeVP, this.vertices[(edgeIndex + 1) % 4]);
           intersectorLine = new Geometry.Line(halfDegreeVP, this.vertices[(edgeIndex + 2) % 4]);
           edgeOffset = 0;

@@ -63,6 +63,10 @@ var pTool = (function(pTool) {
               var newPositions;
               if (Math.abs(rotationAngle % 360) === 180) {
                 newPositions = rotationLogic.rotate(i, 90);
+                if (newPositions === null) {
+                  newPositions = rotationLogic.rotate(i, 89.9);
+                }
+
                 rotationAngle -= 90;
                 var rotationLogic_90deg = new _private.RotationLogic(newPositions, this.perspectiveTool);
                 newPositions = rotationLogic_90deg.rotate(i, rotationAngle);
@@ -83,6 +87,10 @@ var pTool = (function(pTool) {
               // do a one time 90 degree rotate if user just clicked without moving
               if (!wasMoved) {
                 var newPositions = rotationLogic.rotate(i, 90);
+                if (newPositions === null) {
+                  newPositions = rotationLogic.rotate(i, 89.9);
+                }
+
                 if (newPositions !== null) {
                   for (var j = 0; j < this.vertices.length; j++) {
                     this.vertices[j].setTo(newPositions[j]);
