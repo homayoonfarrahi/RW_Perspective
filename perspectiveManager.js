@@ -1,3 +1,13 @@
+/**
+  This class is the main entry point for external programs to use this library.
+  It can be used as a static class as it has been already instantiated here.
+  Users are discouraged from making another instance of this class in their program.
+
+  NOTE that it is often recommended that you write and use your own manager
+  class. However, make sure that the perspectiveTool objects and the snap
+  object know about each other as demonstrated below.
+*/
+
 PerspectiveManager = new function() {
   var perspectives = [];
   var snap;

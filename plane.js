@@ -1,3 +1,21 @@
+/**
+  This class is responsible for complex 3D perspective calculations.
+
+  NOTE that this class does not hold any information about the vertices
+  of the perspective plane, and no instance of this class should be
+  permanently kept anywhere.
+
+  NOTE that contrary to its name it does not represent the perspective plane
+  that is discussed about in other files. The perspective plane is maintained
+  in perspectiveTool.js file.
+
+  This class is initialized with the 4 points of the plane in 2D and provides
+  functions for 2D to 3D transformations and vice versa, enabling this
+  tool to have perspective movement capabilities.
+
+  Modification of this file should be avoided at all costs.
+*/
+
 var Geometry = (function(Geometry) {
 
     // Cross-File Private State

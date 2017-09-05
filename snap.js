@@ -1,3 +1,11 @@
+/**
+  This class keeps track of all the other perspectives and a perspective can
+  request this class to suggest new positions for a point.
+
+  It checks a point against all other points and lines and checks if a point is near enough
+  to be snaped to that position.
+*/
+
 Snap = function() {
   this.perspectives = [];
 

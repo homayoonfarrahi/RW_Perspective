@@ -1,3 +1,11 @@
+/**
+  This file contains a simple JSON object which includes some settings for visuals
+  of the perspective tool.
+
+  Additional setting parameters can be added and set accordingly in other places
+  in the code.
+*/
+
 var pTool = (function(pTool) {
 
     // Cross-File Private State

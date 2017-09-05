@@ -1,3 +1,11 @@
+/**
+  This class represents the anchor system module used by the perspective
+  tool.
+
+  It keeps track of 4 anchor lines, one for each edge of the perspective plane,
+  and the boundaries of the image.
+*/
+
 var pTool = (function(pTool) {
 
     // Cross-File Private State
@@ -14,8 +22,11 @@ var pTool = (function(pTool) {
         };
 
     _private.AnchorSystem = function(boundaries, circles, perspectiveTool, paper) {
+        // references to its 4 anchor lines
         this.anchorLines = [];
         this.boundaries = boundaries;
+
+        // circles comming from the perspective tool
         this.circles = circles;
         this.minX = boundaries[0];
         this.maxX = boundaries[1];

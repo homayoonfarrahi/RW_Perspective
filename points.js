@@ -1,3 +1,11 @@
+/**
+  This class represents a geometric point in 2D or 3D space.
+
+  It keeps track of x, y and x, y, z coordinates.
+
+  Function names are self explanatory.
+*/
+
 var Geometry = (function(Geometry) {
 
     // Cross-File Private State

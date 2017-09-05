@@ -1,3 +1,14 @@
+/**
+  This class is responsible for showing textual information on a
+  perspective plane.
+
+  It uses raphael to show a plane's height, width, and its up direction
+  label.
+
+  When updated, it calculates the new positions and angles for these UI
+  elements and updates their transforms accordingly.
+*/
+
 var pTool = (function(pTool) {
 
     // Cross-File Private State

@@ -1,3 +1,14 @@
+/**
+  This class is responsible for complex 3D rotation calculations.
+
+  This class and plane.js are analogous. The class in plane.js implements the logic
+  for translation in the same plane in 3D space, whereas this class implements the
+  logic for rotation of the perspective plane around one of its edges in 3D space.
+
+  A full explanation of the method used here can be seen at:
+  https://docs.google.com/document/d/1_0b-IhyPU1G6sGbZMmM2JrWZ3Gv3Xs-DE_eXb_-90dA/edit#
+*/
+
 var pTool = (function(pTool) {
 
   // Cross-File Private State
@@ -21,6 +32,8 @@ var pTool = (function(pTool) {
       this.camera = new Geometry.Point3D(0.0, 0.0, 0.0);
       this.vanishingVectors = [];
 
+      // init calculates the correct center of image, position of camera and its
+      // focal length
       this.init = function() {
         for (var i = 0; i < vertices.length; i++) {
           this.vertices.push(this.transformPointToNormalizedSpace(vertices[i], this.perspectiveTool.getDivSize()));
@@ -191,6 +204,8 @@ var pTool = (function(pTool) {
         return false;
       }
 
+      // rotates the initial plane around one of its edges by angle degrees and
+      // returns the potential new positions to be set in the rotationUI file.
       this.rotate = function(edgeIndex, angle) {
         var newPositions = [];
         newPositions[edgeIndex] = this.vertices[edgeIndex];

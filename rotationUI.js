@@ -1,3 +1,10 @@
+/**
+  This class maintains the UI for the 3D rotation feature.
+
+  It initializes the graphic elements with the correct drag callbacks, and when
+  updated calculates and updates the transform of the UI elements.
+*/
+
 var pTool = (function(pTool) {
 
   // Cross-File Private State

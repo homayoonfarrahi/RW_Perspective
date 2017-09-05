@@ -1,3 +1,15 @@
+/**
+  This class represents an anchor line which drawn from one edge of the image
+  to another and is used by the anchor system module.
+
+  It has two anchor points at the ends and a few graphic paths to make the line
+  visible to the user.
+
+  When updated with new plane edge points, it is responsible for calculating
+  new locations of anchor points on the edges of image and updating them along
+  with its paths.
+*/
+
 var pTool = (function(pTool) {
 
     // Cross-File Private State
@@ -14,15 +26,21 @@ var pTool = (function(pTool) {
         };
 
     _private.AnchorLine = function(circle1, circle2, anchorSystem) {
+        // circles coming from the perspective tool
         this.circle1 = circle1;
         this.circle2 = circle2;
+
+        // anchor point objects on the edge of the image
         this.anchorPoint1 = null;
         this.anchorPoint2 = null;
+
+        // graphic paths connecting both anchor points
         this.path1wide = null;
         this.path1narrow = null;
         this.path2wide = null;
         this.path2narrow = null;
         this.middlePath = null;
+
         this.anchorSystem = anchorSystem;
         this.perspectiveTool = anchorSystem.perspectiveTool;
         this.paper = anchorSystem.paper;

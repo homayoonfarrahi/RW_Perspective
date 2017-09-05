@@ -1,3 +1,14 @@
+/**
+  This class represents an anchor point which is always located on the edge of
+  the screen and updates its associated perspective plane point when dragged.
+
+  It keeps track of the anchor line it belongs to and the circle from the
+  perspective tool.
+
+  When dragged, it calculates the new position of the plane point by intersecting
+  two lines and updates the anchor system.
+*/
+
 var pTool = (function(pTool) {
 
     // Cross-File Private State

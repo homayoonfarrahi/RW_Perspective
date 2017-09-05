@@ -1,3 +1,16 @@
+/**
+  This class represents the perspective tool that the user can move around and
+  set the perspective with.
+
+  Multiple instances of this classes can be made if needed.
+
+  It uses several different modules for its different features. Effort has
+  been put to reduce the coupling between the modules and this class.
+
+  The code in this file can definitely use some refactoring to make the code
+  cleaner, more structured and understandable.
+*/
+
 var pTool = (function(pTool) {
 
     // Cross-File Private State
@@ -14,6 +27,7 @@ var pTool = (function(pTool) {
         };
 
     pTool.PerspectiveTool = function() {
+        // this is where the coordinates of the 4 points of the plane on screen are kept.
         this.centers = [
             new Geometry.Point2D(256, 498),
             new Geometry.Point2D(255, 673),
@@ -21,24 +35,43 @@ var pTool = (function(pTool) {
             new Geometry.Point2D(445, 455)
         ];
 
+        // active is useful when showing multiple planes to the user
         var active = true;
         pTool.PerspectiveTool.paper;
         var paper;
+
+        // size of the element in which the image is put
         var divSize;
+
+        // offset of the element from the top left of the page
         var divOffset;
+
+        // showing if the user wants to move in 2D instead of 3D (pressing ctrl)
         var screenSpaceMovement = false;
         var self = this;
+
+        // references to graphic elements denoting the vertices of the plane
         var circles = [];
+
+        // references to graphic elements denoting the edges of the plane
+        // need separate paths because each has to be individually interactive
         var paths = [];
+
+        // the full path for dragging the whole plane around
         var fillerPath;
+
+        // raphael sets for managing the order in which the elements are drawn
         var backgroundSet;
         var nonInteractableSet;
         var fillerSet;
         var planeEdgeSet;
         var planeVertexSet;
         var anchorHandleSet;
+
         _private.isDragging = false;
 
+        // references to different modules that are responsible for different
+        // features of the plane
         var anchorSystem;
         var grid;
         var plane;
@@ -181,6 +214,7 @@ var pTool = (function(pTool) {
             measurementsUI.updateDimensions();
         }
 
+        // initializes its main graphic elements and its modules
         this.init = function(element, divWidth, divHeight) {
             document.onkeydown = function(e) {
                 if (e.key === 'Control') {

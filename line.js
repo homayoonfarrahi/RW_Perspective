@@ -1,3 +1,11 @@
+/**
+  This class represents a geometric line.
+
+  It keeps two points.
+
+  The functions names are self explanatory.
+*/
+
 var Geometry = (function(Geometry) {
 
     // Cross-File Private State
