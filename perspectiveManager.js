@@ -5,7 +5,7 @@ PerspectiveManager = new function() {
   var divWidth;
   var divHeight;
 
-  this.newPerspective = function() {
+  this.createPerspective = function() {
     // for (var i = 0; i < perspectives.length; i++) {
     //   perspectives[i].deactivate();
     // }
@@ -23,7 +23,9 @@ PerspectiveManager = new function() {
       divWidth = dw;
       divHeight = dh;
       snap = new Snap();
-      p = this.newPerspective();
+      var p = this.createPerspective();
       // this.newPerspective();
+
+      return p;
   }
 }
